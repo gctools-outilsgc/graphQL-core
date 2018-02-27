@@ -58,3 +58,6 @@ target/
 
 # Python Virutal Environment
 venv/
+
+# Temp DB for dev
+db.sqlite3
