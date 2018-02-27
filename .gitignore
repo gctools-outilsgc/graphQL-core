@@ -55,3 +55,6 @@ target/
 
 #JetBrains IDE
 .idea/
+
+# Python Virutal Environment
+venv/
