@@ -28,7 +28,14 @@ class Address(models.Model):
 class OrgTier(models.Model):
     name_en = models.CharField(null=False, blank=False, max_length=150)
     name_fr = models.CharField(null=False, blank=False, max_length=150)
-    ownerID = models.ForeignKey(Profile, null=False, blank=False, on_delete=models.ProtectedError)
+    department = models.ForeignKey('Department', null=True, blank=False, on_delete=models.CASCADE)
+    ownerID = models.ForeignKey('Profile', null=True, blank=False, on_delete=models.ProtectedError)
+
+
+class Department(models.Model):
+    name_en = models.CharField(null=False, blank=False, max_length=150)
+    name_fr = models.CharField(null=False, blank=False, max_length=150)
+
 
 
 
