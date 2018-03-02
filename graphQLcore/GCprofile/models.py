@@ -4,8 +4,7 @@ from .helpers import unique_filepath
 
 class Profile(models.Model):
     gcID = models.CharField(unique=True, max_length=100)
-    first_name = models.CharField(null=False, blank=False, max_length=50)
-    last_name = models.CharField(null=False, blank=False, max_length=75)
+    name = models.CharField(null=False, blank=False, max_length=100)
     email = models.EmailField(max_length=255, unique=True)
     avatar = models.ImageField(upload_to=unique_filepath, null=True, blank=True)
     mobile_phone = models.CharField(null=True, blank=True, max_length=15)
