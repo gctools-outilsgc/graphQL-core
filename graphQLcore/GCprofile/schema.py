@@ -3,6 +3,7 @@ from graphene_django import DjangoObjectType
 from .models import Profile, Address, OrgTier, Department
 from django.db.models import Q
 
+
 class ProfileType(DjangoObjectType):
     class Meta:
         model = Profile
@@ -30,12 +31,12 @@ class Query(graphene.ObjectType):
     departments = graphene.List(DepartmentType)
 
     def resolve_profiles(self, info, search=None, **kwargs):
-        if search:
-            profile_filter = (
-                Q(first_name__icontains=search) |
-                Q(last_name__icontains=search)
+        if search is not None:
+            filter = (
+                Q(name__icontains=search)
             )
-        return Profile.objects.filter(profile_filter)
+            return Profile.objects.filter(filter)
+        return Profile.objects.all()
 
     def resolve_addresses(self, info, **kwargs):
         return Address.objects.all()
