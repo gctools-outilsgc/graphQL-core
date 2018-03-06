@@ -35,7 +35,9 @@ class ProfileOptionalInput(graphene.InputObjectType):
     org_id = graphene.Int(required=False, default_value=None)
 
 
+    # ToDo: Change avatar type to a file upload instead of a url/file string
 class CreateProfile(graphene.Mutation):
+    # ToDo: Change avatar type to a file upload instead of a url/file string
     gcID = graphene.String()
     name = graphene.String()
     email = graphene.String()
