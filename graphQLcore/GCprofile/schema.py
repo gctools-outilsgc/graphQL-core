@@ -34,6 +34,7 @@ class ProfileOptionalInput(graphene.InputObjectType):
     supervisor_gc_id = graphene.String(required=False, default_value=None)
     org_id = graphene.Int(required=False, default_value=None)
 
+
 class ModifyProfileInput(graphene.InputObjectType):
 
     name = graphene.String(required=False, default_value=None)
@@ -43,6 +44,10 @@ class ModifyProfileInput(graphene.InputObjectType):
     avatar = graphene.String(required=False, default_value=None)
     mobile_phone = graphene.String(required=False, default_value=None)
     office_phone = graphene.String(required=False, default_value=None)
+    address_id = graphene.Int(required=False, default_value=None)
+    supervisor_gc_id = graphene.String(required=False, default_value=None)
+    org_id = graphene.Int(required=False, default_value=None)
+
 
 class ModifyProfile(graphene.Mutation):
     # ToDo: Change avatar type to a file upload instead of a url/file string
@@ -54,12 +59,13 @@ class ModifyProfile(graphene.Mutation):
     avatar = graphene.String()
     mobile_phone = graphene.String()
     office_phone = graphene.String()
+    address = graphene.Field(AddressType)
+    supervisor = graphene.Field(ProfileType)
+    org = graphene.Field(OrgTierType)
 
     class Arguments:
         gc_id = graphene.String()
         data_to_modify = ModifyProfileInput(required=True)
-
-
 
     @staticmethod
     def mutate(self, info, gc_id, data_to_modify):
@@ -80,10 +86,28 @@ class ModifyProfile(graphene.Mutation):
             profile.mobile_phone = data_to_modify.mobile_phone
         if data_to_modify.office_phone is not None:
             profile.office_phone = data_to_modify.office_phone
+        if data_to_modify.addres_id is not None:
+            address = Address.objects.get(id=data_to_modify.addres_id)
+            if address is not None:
+                profile.address = address
+            else:
+                raise Exception('Could not find address with that id')
+        if data_to_modify.supervisor_gc_id is not None:
+            supervisor = Profile.objects.get(gcID=data_to_modify.supervisor_gc_id)
+            if supervisor is not None:
+                profile.supervisor = supervisor
+            else:
+                raise Exception('Could not find supervisor id')
+        if data_to_modify.org_id is not None:
+            org = OrgTier.objects.get(id=data_to_modify.org_id)
+            if org is not None:
+                profile.org = org
+            else:
+                return Exception('Could not fin Org Tier id')
 
         profile.save()
         return profile
-    
+
 
 class CreateProfile(graphene.Mutation):
     # ToDo: Change avatar type to a file upload instead of a url/file string
