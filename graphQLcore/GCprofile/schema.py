@@ -221,6 +221,7 @@ class Query(graphene.ObjectType):
     @staticmethod
     def resolve_profiles(self, info, search=None, **kwargs):
         if search is not None:
+    # ToDo: Add method to return a URL for avatar instead of file location
             filter = (
                 Q(name__icontains=search)
             )
