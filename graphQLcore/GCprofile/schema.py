@@ -183,7 +183,7 @@ class CreateProfile(graphene.Mutation):
 
 
 class DeleteProfile(graphene.Mutation):
-    delete_success = graphene.String()
+    successful_delete = graphene.String()
 
     class Arguments:
         gc_id = graphene.String()
@@ -195,7 +195,7 @@ class DeleteProfile(graphene.Mutation):
 
         else:
             profile.delete()
-            return DeleteProfile(delete_success="True")
+            return DeleteProfile(successful_delete="True")
 
 
 class CreateDepartment(graphene.Mutation):
@@ -261,6 +261,21 @@ class ModifyDepartment(graphene.Mutation):
         dept.save()
 
         return dept
+
+
+class DeleteDepartment(graphene.Mutation):
+    successful_delete = graphene.String
+
+    class Arguments:
+        department_id = graphene.Int()
+
+    def mutate(self, info, department_id):
+        department = Department.objects.get(id=department_id)
+        if department is None:
+            raise Exception('Department ID does not exist')
+
+        department.delete()
+        return DeleteDepartment(successful_delete='True')
 
 
 class CreateOrgTier(graphene.Mutation):
@@ -347,6 +362,22 @@ class ModifyOrgTier(graphene.Mutation):
         return org
 
 
+class DeleteOrgTier(graphene.Mutation):
+    successful_delete = graphene.String()
+
+    class Arguments:
+        org_tier_id = graphene.Int()
+
+    def mutate(self, info, org_tier_id):
+        org = OrgTier.objects.get(id=org_tier_id)
+        if org is None:
+            raise Exception('Org Tier ID does not exist')
+
+        org.delete()
+
+        return DeleteOrgTier(successful_delete='True')
+
+
 class ModifyAddressInput(graphene.InputObjectType):
     street_address = graphene.String(required=False, default_value=None)
     city = graphene.String(required=False, default_value=None)
@@ -421,6 +452,21 @@ class CreateAddress(graphene.Mutation):
         )
 
 
+class DeleteAddress(graphene.Mutation):
+    successful_delete = graphene.String()
+
+    class Arguments:
+        address_id = graphene.Int()
+
+    def mutate(self, info, address_id):
+        address = Address.objects.get(id=address_id)
+        if address is None:
+            raise Exception('Address ID does not exist')
+
+        address.delete()
+
+        return DeleteAddress(successful_delete='True')
+
 class Query(graphene.ObjectType):
     profiles = graphene.List(ProfileType, search_name=graphene.String(), gcID=graphene.String())
     addresses = graphene.List(AddressType)
@@ -464,6 +510,7 @@ class Mutation(graphene.ObjectType):
     modify_org_tier = ModifyOrgTier.Field()
     modify_address = ModifyAddress.Field()
     delete_profile = DeleteProfile.Field()
+    delete_department = DeleteDepartment.Field()
 
 
 
