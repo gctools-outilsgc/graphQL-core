@@ -247,7 +247,7 @@ class ModifyDepartment(graphene.Mutation):
         return dept
 
 
-class CreateOrtTier(graphene.Mutation):
+class CreateOrgTier(graphene.Mutation):
     name_en = graphene.String()
     name_fr = graphene.String()
     department = graphene.Field(DepartmentType)
@@ -406,7 +406,7 @@ class CreateAddress(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    profiles = graphene.List(ProfileType, search=graphene.String())
+    profiles = graphene.List(ProfileType, search_name=graphene.String(), gcID=graphene.String())
     addresses = graphene.List(AddressType)
     orgtiers = graphene.List(OrgTierType)
     departments = graphene.List(DepartmentType)
@@ -438,11 +438,14 @@ class Query(graphene.ObjectType):
         return Department.objects.all()
 
 
-class Mutation(graphene.ObjectType):
+class CreateProfileData(graphene.ObjectType):
     create_profile = CreateProfile.Field()
     create_department = CreateDepartment.Field()
-    create_org_tier = CreateOrtTier.Field()
+    create_org_tier = CreateOrgTier.Field()
     create_address = CreateAddress.Field()
+
+
+class ModifyProfileData(graphene.ObjectType):
     modify_profile = ModifyProfile.Field()
     modify_department = ModifyDepartment.Field()
     modify_org_tier = ModifyOrgTier.Field()
