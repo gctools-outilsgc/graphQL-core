@@ -182,6 +182,22 @@ class CreateProfile(graphene.Mutation):
             org=profile.org,)
 
 
+class DeleteProfile(graphene.Mutation):
+    delete_success = graphene.String()
+
+    class Arguments:
+        gc_id = graphene.String()
+
+    def mutate(self, info, gc_id):
+        profile = Profile.objects.get(gcID=gc_id)
+        if profile is None:
+            raise Exception('Profile does not exist')
+
+        else:
+            profile.delete()
+            return DeleteProfile(delete_success="True")
+
+
 class CreateDepartment(graphene.Mutation):
     name_en = graphene.String()
     name_fr = graphene.String()
@@ -438,15 +454,16 @@ class Query(graphene.ObjectType):
         return Department.objects.all()
 
 
-class CreateProfileData(graphene.ObjectType):
+class Mutation(graphene.ObjectType):
     create_profile = CreateProfile.Field()
     create_department = CreateDepartment.Field()
     create_org_tier = CreateOrgTier.Field()
     create_address = CreateAddress.Field()
-
-
-class ModifyProfileData(graphene.ObjectType):
     modify_profile = ModifyProfile.Field()
     modify_department = ModifyDepartment.Field()
     modify_org_tier = ModifyOrgTier.Field()
     modify_address = ModifyAddress.Field()
+    delete_profile = DeleteProfile.Field()
+
+
+
