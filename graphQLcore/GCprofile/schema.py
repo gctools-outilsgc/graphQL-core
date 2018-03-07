@@ -154,13 +154,13 @@ class CreateProfile(graphene.Mutation):
             else:
                 profile.address = Address.objects.filter(id=optional_data.address_id).first()
                 if not profile.address:
-                    raise Exception('Invalid Address')
+                    raise Exception('Address ID does not exist')
             if optional_data.supervisor_gc_id is None:
                 profile.supervisor = None
             else:
                 profile.supervisor = Profile.objects.filter(gcID=optional_data.supervisor_gc_id).first()
                 if not profile.supervisor:
-                    raise Exception('Invalid Supervisor Entry')
+                    raise Exception('Supervisor gcID does not exist')
             if optional_data.org_id is None:
                 profile.org = None
             else:
@@ -211,6 +211,42 @@ class CreateDepartment(graphene.Mutation):
         )
 
 
+class ModifyDepartmentInput(graphene.InputObjectType):
+    name_en = graphene.String(required=False, default=None)
+    name_fr = graphene.String(required=False, default=None)
+    acronym_fr = graphene.String(required=False, default=None)
+    acronym_en = graphene.String(required=False, default=None)
+
+
+class ModifyDepartment(graphene.Mutation):
+    name_en = graphene.String()
+    name_fr = graphene.String()
+    acronym_fr = graphene.String()
+    acronym_en = graphene.String()
+
+    class Arguments:
+        deptartment_id = graphene.Int()
+        data_to_modify = ModifyDepartmentInput(required=True)
+
+    @staticmethod
+    def mutate(self, info, department_id, data_to_modify):
+        dept = Department.objects.get(id=department_id)
+        if dept is None:
+            raise Exception('Department ID does not exist')
+        if data_to_modify.name_en is not None:
+            dept.name_en = data_to_modify.name_en
+        if data_to_modify.name_fr is not None:
+            dept.name_fr = data_to_modify.name_fr
+        if data_to_modify.acronym_en is not None:
+            dept.acronym_en = data_to_modify.acronym_en
+        if data_to_modify.acronym_fr is not None:
+            dept.acronym_fr = data_to_modify.acronym_fr
+
+        dept.save()
+
+        return dept
+
+
 class CreateOrtTier(graphene.Mutation):
     name_en = graphene.String()
     name_fr = graphene.String()
@@ -251,6 +287,88 @@ class CreateOrtTier(graphene.Mutation):
             department=orgtier.department,
             ownerID=orgtier.department
         )
+
+
+class ModifyOrgTierInput(graphene.InputObjectType):
+    name_en = graphene.String(required=False, default_value=None)
+    name_fr = graphene.String(required=False, default_value=None)
+    department_id = graphene.Int(required=False, default_value=None)
+    owner_gc_id = graphene.String(required=False, default_value=None)
+
+
+class ModifyOrgTier(graphene.Mutation):
+    name_en = graphene.String()
+    name_fr = graphene.String()
+    department = graphene.Field(DepartmentType)
+    ownerID = graphene.Field(ProfileType)
+
+    class Arguments:
+        org_id = graphene.Int()
+        data_to_modify = ModifyOrgTierInput(required=True)
+
+    @staticmethod
+    def mutate(self, info, org_id, data_to_modify):
+        org = OrgTier.objects.get(id=org_id)
+        if org is None:
+            raise Exception('Could not find Org Tier ID')
+        if data_to_modify.name_en is not None:
+            org.name_en = data_to_modify.name_en
+        if data_to_modify.name_fr is not None:
+            org.name_fr = data_to_modify.name_fr
+        dept = Department.objects.get(id=data_to_modify.department_id)
+        if dept is None:
+            raise Exception('Could not find Department ID')
+        else:
+            org.department = dept
+        profile = Profile.objects.get(gcID=owner_gc_id)
+        if profile is None:
+            raise Exception('Could not find Org Owner ID')
+        else:
+            org.ownerID = profile
+
+        org.save()
+
+        return org
+
+
+class ModifyAddressInput(graphene.InputObjectType):
+    street_address = graphene.String(required=False, default_value=None)
+    city = graphene.String(required=False, default_value=None)
+    province = graphene.String(required=False, default_value=None)
+    postal_code = graphene.String(required=False, default_value=None)
+    country = graphene.String(required=False, default_value=None)
+
+
+class ModifyAddress(graphene.Mutation):
+    street_address = graphene.String()
+    city = graphene.String()
+    province = graphene.String()
+    postal_code = graphene.String()
+    country = graphene.String()
+
+    class Arguments:
+        address_id = graphene.Int()
+        data_to_modify = ModifyAddressInput(required=True)
+
+    @staticmethod
+    def mutate(self, info, address_id, data_to_modify):
+        address = Address.objects.get(id=address_id)
+        if address is None:
+            raise Exception('Could not find Address ID')
+        if data_to_modify.street_address is not None:
+            address.street_address = data_to_modify.street_address
+        if data_to_modify.city is not None:
+            address.city = data_to_modify.city
+        if data_to_modify.province is not None:
+            address.province = data_to_modify.province
+        if data_to_modify.postal_code is not None:
+            address.postal_code = data_to_modify.postal_code
+        if data_to_modify.country is not None:
+            address.country = data_to_modify.country
+
+        address.save()
+
+        return address
 
 
 class CreateAddress(graphene.Mutation):
@@ -295,14 +413,16 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     # ToDo: Add method to return a URL for avatar instead of file location
-    def resolve_profiles(self, info, search_name=None, **kwargs):
+    def resolve_profiles(self, info, search_name=None, gcID=None, **kwargs):
         if search_name is not None:
             filter = (
                 Q(name__icontains=search_name)
             )
             return Profile.objects.filter(filter)
-        if kwargs.get('gcID') is not None:
-            return Profile.objects.filter(gcID=kwargs.get('gcID'))
+
+        if gcID is not None:
+            return Profile.objects.filter(gcID=gcID)
+
         return Profile.objects.all()
 
     @staticmethod
@@ -324,3 +444,6 @@ class Mutation(graphene.ObjectType):
     create_org_tier = CreateOrtTier.Field()
     create_address = CreateAddress.Field()
     modify_profile = ModifyProfile.Field()
+    modify_department = ModifyDepartment.Field()
+    modify_org_tier = ModifyOrgTier.Field()
+    modify_address = ModifyAddress.Field()
