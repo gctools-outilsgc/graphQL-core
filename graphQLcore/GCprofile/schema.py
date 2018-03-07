@@ -133,10 +133,10 @@ class CreateProfile(graphene.Mutation):
     def mutate(self, info, gc_id, name, email, optional_data=None):
 
         filter = (
-            Q(gcID=gc_id) |
-            Q(email=email)
+            Q(gcID__iexact=gc_id) |
+            Q(email__iexact=email)
         )
-        if not Profile.objects.filter(filter).exists():
+        if Profile.objects.filter(filter).exists():
             raise Exception('Profile with same unique keys (gcID or email) already exists')
 
         profile = Profile(
@@ -221,12 +221,12 @@ class CreateDepartment(graphene.Mutation):
     def mutate(self, info, name_en, name_fr, acronym_en, acronym_fr):
 
         filter = (
-            Q(name_en=name_en) &
-            Q(name_Fr=name_fr) &
-            Q(acronym_en=acronym_en) &
-            Q(acronym_fr=acronym_fr)
+            Q(name_en__iexact=name_en) &
+            Q(name_Fr__iexact=name_fr) &
+            Q(acronym_en__iexact=acronym_en) &
+            Q(acronym_fr__iexact=acronym_fr)
         )
-        if not Department.objects.filter(filter).exists:
+        if Department.objects.filter(filter).exists:
             raise Exception('Department with that information already exists')
 
         department = Department(
@@ -311,13 +311,12 @@ class CreateOrgTier(graphene.Mutation):
     def mutate(self, info, name_en, name_fr, department_id, owner_gc_id=None):
 
         filter = (
-            Q(name_en=name_en) &
-            Q(name_fr=name_fr) &
-            Q(department__id=department_id)
-
+            Q(name_en__iexact=name_en) &
+            Q(name_fr__iexact=name_fr) &
+            Q(department__id__exact=department_id)
         )
 
-        if not OrgTier.objects.filter(filter).exists():
+        if OrgTier.objects.filter(filter).exists():
             raise Exception('Org Tier with that information already exists')
 
         orgtier = OrgTier(
@@ -339,7 +338,7 @@ class CreateOrgTier(graphene.Mutation):
                 raise Exception('Could not find Department ID')
 
         orgtier.save()
-        return CreateOrtTier(
+        return CreateOrgTier(
             name_en=orgtier.name_en,
             name_fr=orgtier.name_fr,
             department=orgtier.department,
@@ -463,14 +462,14 @@ class CreateAddress(graphene.Mutation):
     def mutate(self, info, street_address, city, province, postal_code, country):
 
         filter = (
-            Q(street_address=street_address) &
-            Q(city=city) &
-            Q(province=province) &
-            Q(postal_code=postal_code) &
-            Q(country=country)
+            Q(street_address__iexact=street_address) &
+            Q(city__iexact=city) &
+            Q(province__iexact=province) &
+            Q(postal_code__iexact=postal_code) &
+            Q(country__iexact=country)
         )
 
-        if not Address.objects.filter(filter).exists():
+        if Address.objects.filter(filter).exists():
             raise Exception('Address with that information already exists')
 
         address = Address(
