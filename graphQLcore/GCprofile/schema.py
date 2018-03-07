@@ -130,7 +130,7 @@ class CreateProfile(graphene.Mutation):
         optional_data = ProfileOptionalInput(required=False)
 
     @staticmethod
-    def mutate(self, info, gc_id, name, email, title_en, title_fr, optional_data=None):
+    def mutate(self, info, gc_id, name, email, optional_data=None):
 
         filter = (
             Q(gcID=gc_id) |
