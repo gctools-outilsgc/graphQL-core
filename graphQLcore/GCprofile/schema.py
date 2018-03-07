@@ -132,6 +132,13 @@ class CreateProfile(graphene.Mutation):
     @staticmethod
     def mutate(self, info, gc_id, name, email, title_en, title_fr, optional_data=None):
 
+        filter = (
+            Q(gcID=gc_id) |
+            Q(email=email)
+        )
+        if not Profile.objects.filter(filter).exists():
+            raise Exception('Profile with same unique keys (gcID or email) already exists')
+
         profile = Profile(
             gcID=gc_id,
             name=name,
@@ -212,6 +219,16 @@ class CreateDepartment(graphene.Mutation):
 
     @staticmethod
     def mutate(self, info, name_en, name_fr, acronym_en, acronym_fr):
+
+        filter = (
+            Q(name_en=name_en) &
+            Q(name_Fr=name_fr) &
+            Q(acronym_en=acronym_en) &
+            Q(acronym_fr=acronym_fr)
+        )
+        if not Department.objects.filter(filter).exists:
+            raise Exception('Department with that information already exists')
+
         department = Department(
             name_en=name_en,
             name_fr=name_fr,
@@ -264,7 +281,7 @@ class ModifyDepartment(graphene.Mutation):
 
 
 class DeleteDepartment(graphene.Mutation):
-    successful_delete = graphene.String
+    successful_delete = graphene.String()
 
     class Arguments:
         department_id = graphene.Int()
@@ -292,6 +309,16 @@ class CreateOrgTier(graphene.Mutation):
 
     @staticmethod
     def mutate(self, info, name_en, name_fr, department_id, owner_gc_id=None):
+
+        filter = (
+            Q(name_en=name_en) &
+            Q(name_fr=name_fr) &
+            Q(department__id=department_id)
+
+        )
+
+        if not OrgTier.objects.filter(filter).exists():
+            raise Exception('Org Tier with that information already exists')
 
         orgtier = OrgTier(
             name_en=name_en,
@@ -434,6 +461,18 @@ class CreateAddress(graphene.Mutation):
 
     @staticmethod
     def mutate(self, info, street_address, city, province, postal_code, country):
+
+        filter = (
+            Q(street_address=street_address) &
+            Q(city=city) &
+            Q(province=province) &
+            Q(postal_code=postal_code) &
+            Q(country=country)
+        )
+
+        if not Address.objects.filter(filter).exists():
+            raise Exception('Address with that information already exists')
+
         address = Address(
             street_address=street_address,
             city=city,
@@ -466,6 +505,7 @@ class DeleteAddress(graphene.Mutation):
         address.delete()
 
         return DeleteAddress(successful_delete='True')
+
 
 class Query(graphene.ObjectType):
     profiles = graphene.List(ProfileType, search_name=graphene.String(), gcID=graphene.String())
@@ -511,6 +551,8 @@ class Mutation(graphene.ObjectType):
     modify_address = ModifyAddress.Field()
     delete_profile = DeleteProfile.Field()
     delete_department = DeleteDepartment.Field()
+    delete_org = DeleteOrgTier.Field()
+    delete_address = DeleteAddress.Field()
 
 
 
