@@ -18,6 +18,8 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 
+    # ToDo: Add endpoint to serve up avatar images
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('graphiql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
