@@ -86,8 +86,8 @@ class ModifyProfile(graphene.Mutation):
             profile.mobile_phone = data_to_modify.mobile_phone
         if data_to_modify.office_phone is not None:
             profile.office_phone = data_to_modify.office_phone
-        if data_to_modify.addres_id is not None:
-            address = Address.objects.get(id=data_to_modify.addres_id)
+        if data_to_modify.address_id is not None:
+            address = Address.objects.get(id=data_to_modify.address_id)
             if address is not None:
                 profile.address = address
             else:
@@ -222,11 +222,11 @@ class CreateDepartment(graphene.Mutation):
 
         filter = (
             Q(name_en__iexact=name_en) &
-            Q(name_Fr__iexact=name_fr) &
+            Q(name_fr__iexact=name_fr) &
             Q(acronym_en__iexact=acronym_en) &
             Q(acronym_fr__iexact=acronym_fr)
         )
-        if Department.objects.filter(filter).exists:
+        if Department.objects.filter(filter).exists():
             raise Exception('Department with that information already exists')
 
         department = Department(
@@ -372,12 +372,15 @@ class ModifyOrgTier(graphene.Mutation):
             org.name_en = data_to_modify.name_en
         if data_to_modify.name_fr is not None:
             org.name_fr = data_to_modify.name_fr
-        dept = Department.objects.get(id=data_to_modify.department_id)
-        if dept is None:
-            raise Exception('Could not find Department ID')
-        else:
-            org.department = dept
-        profile = Profile.objects.get(gcID=owner_gc_id)
+        if data_to_modify.department_id is not None:
+            dept = Department.objects.get(id=data_to_modify.department_id)
+            if dept is not None:
+                org.department = dept
+
+            else:
+                raise Exception('Could not find Department ID')
+        if data_to_modify.owner_gc_id is not None:
+            profile = Profile.objects.get(gcID=data_to_modify.owner_gc_id)
         if profile is None:
             raise Exception('Could not find Org Owner ID')
         else:
