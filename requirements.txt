@@ -1,5 +1,9 @@
+wheel
 django
 graphene
 graphene-django
 django-filter
 pillow
+psycopg2
+gunicorn
+
