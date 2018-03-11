@@ -3,7 +3,7 @@ from .helpers import unique_filepath
 
 
 class Profile(models.Model):
-    gcID = models.CharField(unique=True, max_length=100)
+    gcID = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(null=False, blank=False, max_length=100)
     email = models.EmailField(max_length=255, unique=True)
     avatar = models.ImageField(upload_to=unique_filepath, null=True, blank=True)
