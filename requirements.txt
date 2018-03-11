@@ -4,3 +4,5 @@ graphene
 graphene-django
 django-filter
 pillow
+requests
+PyJWT

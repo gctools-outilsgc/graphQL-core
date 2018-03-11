@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'graphene_django',
     'GCprofile',
+    'Auth',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,5 @@ STATIC_URL = '/static/'
 GRAPHENE ={
     'SCHEMA': 'graphQLcore.schema.schema'
 }
+
+OIDC_USERINFO_ENDPOINT = 'http://localhost:8000/openid/userinfo'

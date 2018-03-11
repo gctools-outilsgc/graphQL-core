@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from .models import Profile, Address, OrgTier, Department
 from django.db.models import Q
+import Auth.auth
 
 
 class ProfileType(DjangoObjectType):
@@ -64,11 +65,18 @@ class ModifyProfile(graphene.Mutation):
     org = graphene.Field(OrgTierType)
 
     class Arguments:
-        gc_id = graphene.String()
-        data_to_modify = ModifyProfileInput(required=True)
+        gc_id = graphene.String(description='An individuals unique identifier as provided by the "sub" field from oidc'
+                                            ' provider in identity token')
+        data_to_modify = ModifyProfileInput(required=True, description='A dict of values to modify')
 
     @staticmethod
     def mutate(self, info, gc_id, data_to_modify):
+
+        scopes = {'modify_profile'}
+
+        if not Auth.auth.check_token(self, info, scopes):
+            raise Exception('Not authorized to modify profile')
+
         profile = Profile.objects.get(gcID=gc_id)
         if profile is None:
             raise Exception('Could not find that profile')
@@ -542,7 +550,7 @@ class Query(graphene.ObjectType):
         return Department.objects.all()
 
 
-class Mutation(graphene.ObjectType):
+class ProfileMutation(graphene.ObjectType):
     create_profile = CreateProfile.Field()
     create_department = CreateDepartment.Field()
     create_org_tier = CreateOrgTier.Field()
@@ -555,6 +563,7 @@ class Mutation(graphene.ObjectType):
     delete_department = DeleteDepartment.Field()
     delete_org = DeleteOrgTier.Field()
     delete_address = DeleteAddress.Field()
+
 
 
 
