@@ -73,8 +73,9 @@ class ModifyProfile(graphene.Mutation):
     def mutate(self, info, gc_id, data_to_modify):
 
         scopes = {'modify_profile'}
+        kwargs = {'gcID': gc_id}
 
-        if not Auth.auth.check_token(self, info, scopes):
+        if not Auth.auth.check_token(self, info, scopes, **kwargs):
             raise Exception('Not authorized to modify profile')
 
         profile = Profile.objects.get(gcID=gc_id)
