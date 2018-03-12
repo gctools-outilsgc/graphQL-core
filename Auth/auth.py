@@ -28,22 +28,12 @@ def check_token(self, info, scopes=None, **kwargs):
         gc_id = kwargs.get('gcID')
         if 'sub' in response and response.get('sub') == gc_id:
             authorized = authorized & True
-            check_profile(response.get('sub'), response.get('name'), response.get('email'))
         else:
             authorized = authorized & False
 
     return authorized
 
 
-def check_profile(gc_id, name, email):
-    # check to see if profile exists from token 'sub' identity.  If it doesn't then create one.
-    filter = (
-            Q(gcID__iexact=gc_id) |
-            Q(email__iexact=email)
-    )
-    if not Profile.objects.filter(filter).exists():
-        profile = Profile(gcID=gc_id, name=name, email=email)
-        profile.save()
 
 
 
