@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 from profile.models import Profile
-from djano.db.models import Q
+from django.db.models import Q
 
 
 def check_token(self, info, scopes=None, **kwargs):
