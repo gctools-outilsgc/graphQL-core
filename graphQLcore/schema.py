@@ -1,12 +1,12 @@
 import graphene
-import GCprofile.schema
+import profile.schema
 
 
-class Query(GCprofile.schema.Query, graphene.ObjectType):
+class Query(profile.schema.Query, graphene.ObjectType):
     pass
 
 
-class Mutation(GCprofile.schema.Mutation, graphene.ObjectType):
+class Mutation(profile.schema.Mutation, graphene.ObjectType):
     pass
 
 

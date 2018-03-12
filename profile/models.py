@@ -23,7 +23,9 @@ class Address(models.Model):
     street_address = models.CharField(null=False, blank=False, max_length=100)
     city = models.CharField(null=False, blank=False, max_length=100)
     province = models.CharField(null=False, blank=False, max_length=100)
+    # state = models.CharField(null=False, blank=False, max_length=100)
     postal_code = models.CharField(null=False, blank=False, max_length=10)
+    # zip_code = models.CharField(null=False, blank=False, max_length=10)
     country = models.CharField(null=False, blank=False, max_length=100, default='Canada')
 
     def __str__(self):
@@ -33,14 +35,14 @@ class Address(models.Model):
 class OrgTier(models.Model):
     name_en = models.CharField(null=False, blank=False, max_length=150)
     name_fr = models.CharField(null=False, blank=False, max_length=150)
-    department = models.ForeignKey('Department', null=False, blank=False, on_delete=models.CASCADE, related_name="Org_Tiers")
+    organization = models.ForeignKey('Organization', null=False, blank=False, on_delete=models.CASCADE, related_name="Org_Tiers")
     ownerID = models.ForeignKey('Profile', null=True, blank=False, on_delete=models.SET_NULL, related_name="Owner_of_Org_Tiers")
 
     def __str__(self):
         return u'%s / %s' % (self.name_en, self.name_fr)
 
 
-class Department(models.Model):
+class Organization(models.Model):
     name_en = models.CharField(null=False, blank=False, max_length=150)
     name_fr = models.CharField(null=False, blank=False, max_length=150)
     acronym_fr = models.CharField(null=False, blank=False, max_length=10)

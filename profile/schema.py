@@ -1,6 +1,6 @@
 import graphene
 from graphene_django import DjangoObjectType
-from .models import Profile, Address, OrgTier, Department
+from .models import Profile, Address, OrgTier, Organization
 from django.db.models import Q
 import Auth.auth
 
@@ -20,9 +20,9 @@ class OrgTierType(DjangoObjectType):
         model = OrgTier
 
 
-class DepartmentType(DjangoObjectType):
+class OrganizationType(DjangoObjectType):
     class Meta:
-        model = Department
+        model = Organization
 
 
 class ProfileOptionalInput(graphene.InputObjectType):
@@ -52,6 +52,7 @@ class ModifyProfileInput(graphene.InputObjectType):
 
 class ModifyProfile(graphene.Mutation):
     # ToDo: Change avatar type to a file upload instead of a url/file string
+
     gcID = graphene.String()
     name = graphene.String()
     email = graphene.String()
@@ -118,84 +119,85 @@ class ModifyProfile(graphene.Mutation):
         return profile
 
 
-class CreateProfile(graphene.Mutation):
-    # ToDo: Change avatar type to a file upload instead of a url/file string
-    gcID = graphene.String()
-    name = graphene.String()
-    email = graphene.String()
-    title_en = graphene.String()
-    title_fr = graphene.String()
-    avatar = graphene.String()
-    mobile_phone = graphene.String()
-    office_phone = graphene.String()
-    address = graphene.Field(AddressType)
-    supervisor = graphene.Field(ProfileType)
-    org = graphene.Field(OrgTierType)
-
-    class Arguments:
-        gc_id = graphene.String()
-        name = graphene.String()
-        email = graphene.String()
-        optional_data = ProfileOptionalInput(required=False)
-
-    @staticmethod
-    def mutate(self, info, gc_id, name, email, optional_data=None):
-
-        filter = (
-            Q(gcID__iexact=gc_id) |
-            Q(email__iexact=email)
-        )
-        if Profile.objects.filter(filter).exists():
-            raise Exception('Profile with same unique keys (gcID or email) already exists')
-
-        profile = Profile(
-            gcID=gc_id,
-            name=name,
-            email=email,
-        )
-
-        if optional_data is None:
-            profile.address = None
-            profile.supervisor = None
-            profile.org = None
-        else:
-            profile.avatar = optional_data.avatar
-            profile.mobile_phone = optional_data.mobile_phone
-            profile.office_phone = optional_data.office_phone
-            profile.title_fr = optional_data.title_fr
-            profile.title_en = optional_data.title_en
-
-            if optional_data.address_id is None:
-                profile.address = None
-            else:
-                profile.address = Address.objects.filter(id=optional_data.address_id).first()
-                if not profile.address:
-                    raise Exception('Address ID does not exist')
-            if optional_data.supervisor_gc_id is None:
-                profile.supervisor = None
-            else:
-                profile.supervisor = Profile.objects.filter(gcID=optional_data.supervisor_gc_id).first()
-                if not profile.supervisor:
-                    raise Exception('Supervisor gcID does not exist')
-            if optional_data.org_id is None:
-                profile.org = None
-            else:
-                profile.org = OrgTier.objects.filters(id=optional_data.org_id).first()
-
-        profile.save()
-
-        return CreateProfile(
-            gcID=profile.gcID,
-            name=profile.name,
-            email=profile.email,
-            avatar=profile.avatar,
-            mobile_phone=profile.mobile_phone,
-            office_phone=profile.office_phone,
-            address=profile.address,
-            title_en=profile.title_en,
-            title_fr=profile.title_fr,
-            supervisor=profile.supervisor,
-            org=profile.org,)
+# class CreateProfile(graphene.Mutation):
+#     # ToDo: Change avatar type to a file upload instead of a url/file string
+#     # ToDo: Implement trigger on OIDC to create profile upon registration
+#     gcID = graphene.String()
+#     name = graphene.String()
+#     email = graphene.String()
+#     title_en = graphene.String()
+#     title_fr = graphene.String()
+#     avatar = graphene.String()
+#     mobile_phone = graphene.String()
+#     office_phone = graphene.String()
+#     address = graphene.Field(AddressType)
+#     supervisor = graphene.Field(ProfileType)
+#     org = graphene.Field(OrgTierType)
+#
+#     class Arguments:
+#         gc_id = graphene.String()
+#         name = graphene.String()
+#         email = graphene.String()
+#         optional_data = ProfileOptionalInput(required=False)
+#
+#     @staticmethod
+#     def mutate(self, info, gc_id, name, email, optional_data=None):
+#
+#         filter = (
+#             Q(gcID__iexact=gc_id) |
+#             Q(email__iexact=email)
+#         )
+#         if Profile.objects.filter(filter).exists():
+#             raise Exception('Profile with same unique keys (gcID or email) already exists')
+#
+#         profile = Profile(
+#             gcID=gc_id,
+#             name=name,
+#             email=email,
+#         )
+#
+#         if optional_data is None:
+#             profile.address = None
+#             profile.supervisor = None
+#             profile.org = None
+#         else:
+#             profile.avatar = optional_data.avatar
+#             profile.mobile_phone = optional_data.mobile_phone
+#             profile.office_phone = optional_data.office_phone
+#             profile.title_fr = optional_data.title_fr
+#             profile.title_en = optional_data.title_en
+#
+#             if optional_data.address_id is None:
+#                 profile.address = None
+#             else:
+#                 profile.address = Address.objects.filter(id=optional_data.address_id).first()
+#                 if not profile.address:
+#                     raise Exception('Address ID does not exist')
+#             if optional_data.supervisor_gc_id is None:
+#                 profile.supervisor = None
+#             else:
+#                 profile.supervisor = Profile.objects.filter(gcID=optional_data.supervisor_gc_id).first()
+#                 if not profile.supervisor:
+#                     raise Exception('Supervisor gcID does not exist')
+#             if optional_data.org_id is None:
+#                 profile.org = None
+#             else:
+#                 profile.org = OrgTier.objects.filters(id=optional_data.org_id).first()
+#
+#         profile.save()
+#
+#         return CreateProfile(
+#             gcID=profile.gcID,
+#             name=profile.name,
+#             email=profile.email,
+#             avatar=profile.avatar,
+#             mobile_phone=profile.mobile_phone,
+#             office_phone=profile.office_phone,
+#             address=profile.address,
+#             title_en=profile.title_en,
+#             title_fr=profile.title_fr,
+#             supervisor=profile.supervisor,
+#             org=profile.org,)
 
 
 class DeleteProfile(graphene.Mutation):
@@ -205,6 +207,11 @@ class DeleteProfile(graphene.Mutation):
         gc_id = graphene.String()
 
     def mutate(self, info, gc_id):
+        scopes = {'modify_profile'}
+        kwargs = {'gcID': gc_id}
+        if not Auth.auth.check_token(self, info, scopes, **kwargs):
+            raise Exception('Not Authorized to delete profile')
+
         profile = Profile.objects.get(gcID=gc_id)
         if profile is None:
             raise Exception('Profile does not exist')
@@ -214,7 +221,7 @@ class DeleteProfile(graphene.Mutation):
             return DeleteProfile(successful_delete="True")
 
 
-class CreateDepartment(graphene.Mutation):
+class CreateOrganization(graphene.Mutation):
     name_en = graphene.String()
     name_fr = graphene.String()
     acronym_fr = graphene.String()
@@ -235,94 +242,94 @@ class CreateDepartment(graphene.Mutation):
             Q(acronym_en__iexact=acronym_en) &
             Q(acronym_fr__iexact=acronym_fr)
         )
-        if Department.objects.filter(filter).exists():
+        if Organization.objects.filter(filter).exists():
             raise Exception('Department with that information already exists')
 
-        department = Department(
+        organization = Organization(
             name_en=name_en,
             name_fr=name_fr,
             acronym_en=acronym_en,
             acronym_fr=acronym_fr,
         )
-        department.save()
-        return CreateDepartment(
-            name_en=department.name_en,
-            name_fr=department.name_fr,
-            acronym_fr=department.acronym_fr,
-            acronym_en=department.acronym_en,
+        organization.save()
+        return CreateOrganization(
+            name_en=organization.name_en,
+            name_fr=organization.name_fr,
+            acronym_fr=organization.acronym_fr,
+            acronym_en=organization.acronym_en,
         )
 
 
-class ModifyDepartmentInput(graphene.InputObjectType):
+class ModifyOrganizationInput(graphene.InputObjectType):
     name_en = graphene.String(required=False, default=None)
     name_fr = graphene.String(required=False, default=None)
     acronym_fr = graphene.String(required=False, default=None)
     acronym_en = graphene.String(required=False, default=None)
 
 
-class ModifyDepartment(graphene.Mutation):
+class ModifyOrganization(graphene.Mutation):
     name_en = graphene.String()
     name_fr = graphene.String()
     acronym_fr = graphene.String()
     acronym_en = graphene.String()
 
     class Arguments:
-        deptartment_id = graphene.Int()
-        data_to_modify = ModifyDepartmentInput(required=True)
+        organization_id = graphene.Int()
+        data_to_modify = ModifyOrganizationInput(required=True)
 
     @staticmethod
-    def mutate(self, info, department_id, data_to_modify):
-        dept = Department.objects.get(id=department_id)
-        if dept is None:
+    def mutate(self, info, organization_id, data_to_modify):
+        organization = Organization.objects.get(id=organization_id)
+        if organization is None:
             raise Exception('Department ID does not exist')
         if data_to_modify.name_en is not None:
-            dept.name_en = data_to_modify.name_en
+            organization.name_en = data_to_modify.name_en
         if data_to_modify.name_fr is not None:
-            dept.name_fr = data_to_modify.name_fr
+            organization.name_fr = data_to_modify.name_fr
         if data_to_modify.acronym_en is not None:
-            dept.acronym_en = data_to_modify.acronym_en
+            organization.acronym_en = data_to_modify.acronym_en
         if data_to_modify.acronym_fr is not None:
-            dept.acronym_fr = data_to_modify.acronym_fr
+            organization.acronym_fr = data_to_modify.acronym_fr
 
-        dept.save()
+        organization.save()
 
-        return dept
+        return organization
 
 
-class DeleteDepartment(graphene.Mutation):
+class DeleteOrganization(graphene.Mutation):
     successful_delete = graphene.String()
 
     class Arguments:
         department_id = graphene.Int()
 
-    def mutate(self, info, department_id):
-        department = Department.objects.get(id=department_id)
-        if department is None:
+    def mutate(self, info, organization_id):
+        organization = Organization.objects.get(id=organization_id)
+        if organization is None:
             raise Exception('Department ID does not exist')
 
-        department.delete()
-        return DeleteDepartment(successful_delete='True')
+        organization.delete()
+        return DeleteOrganization(successful_delete='True')
 
 
 class CreateOrgTier(graphene.Mutation):
     name_en = graphene.String()
     name_fr = graphene.String()
-    department = graphene.Field(DepartmentType)
+    organization = graphene.Field(OrganizationType)
     ownerID = graphene.Field(ProfileType)
 
     class Arguments:
         name_en = graphene.String()
         name_fr = graphene.String()
-        department_id = graphene.Int()
+        organization_id = graphene.Int()
         owner_gc_id = graphene.String(required=False, default_value=None)
 
     @staticmethod
-    def mutate(self, info, name_en, name_fr, department_id, owner_gc_id=None):
+    def mutate(self, info, name_en, name_fr, organization_id, owner_gc_id=None):
 
         filter = (
             Q(name_en__iexact=name_en) &
             Q(name_fr__iexact=name_fr) &
-            Q(department__id__exact=department_id)
+            Q(department__id__exact=organization_id)
         )
 
         if OrgTier.objects.filter(filter).exists():
@@ -339,33 +346,33 @@ class CreateOrgTier(graphene.Mutation):
             orgtier.ownerID = Profile.objects.filter(gcID=owner_gc_id).first()
             if not orgtier.ownerID:
                 raise Exception('Could not find Owner ID')
-        if department_id is None:
-            orgtier.department = None
+        if organization_id is None:
+            orgtier.organization = None
         else:
-            orgtier.department = Department.objects.filter(id=department_id).first()
-            if not orgtier.department:
+            orgtier.organization = Organization.objects.filter(id=organization_id).first()
+            if not orgtier.organization:
                 raise Exception('Could not find Department ID')
 
         orgtier.save()
         return CreateOrgTier(
             name_en=orgtier.name_en,
             name_fr=orgtier.name_fr,
-            department=orgtier.department,
-            ownerID=orgtier.department
+            department=orgtier.organization,
+            ownerID=orgtier.organization
         )
 
 
 class ModifyOrgTierInput(graphene.InputObjectType):
     name_en = graphene.String(required=False, default_value=None)
     name_fr = graphene.String(required=False, default_value=None)
-    department_id = graphene.Int(required=False, default_value=None)
+    organization_id = graphene.Int(required=False, default_value=None)
     owner_gc_id = graphene.String(required=False, default_value=None)
 
 
 class ModifyOrgTier(graphene.Mutation):
     name_en = graphene.String()
     name_fr = graphene.String()
-    department = graphene.Field(DepartmentType)
+    organization = graphene.Field(OrganizationType)
     ownerID = graphene.Field(ProfileType)
 
     class Arguments:
@@ -381,13 +388,13 @@ class ModifyOrgTier(graphene.Mutation):
             org.name_en = data_to_modify.name_en
         if data_to_modify.name_fr is not None:
             org.name_fr = data_to_modify.name_fr
-        if data_to_modify.department_id is not None:
-            dept = Department.objects.get(id=data_to_modify.department_id)
-            if dept is not None:
-                org.department = dept
+        if data_to_modify.organization_id is not None:
+            organization = Organization.objects.get(id=data_to_modify.organization_id)
+            if organization is not None:
+                org.organization = organization
 
             else:
-                raise Exception('Could not find Department ID')
+                raise Exception('Could not find Organization ID')
         if data_to_modify.owner_gc_id is not None:
             profile = Profile.objects.get(gcID=data_to_modify.owner_gc_id)
         if profile is None:
@@ -522,7 +529,7 @@ class Query(graphene.ObjectType):
     profiles = graphene.List(ProfileType, search_name=graphene.String(), gcID=graphene.String())
     addresses = graphene.List(AddressType)
     orgtiers = graphene.List(OrgTierType)
-    departments = graphene.List(DepartmentType)
+    organization = graphene.List(OrganizationType)
 
     @staticmethod
     # ToDo: Add method to return a URL for avatar instead of file location
@@ -547,21 +554,21 @@ class Query(graphene.ObjectType):
         return OrgTier.objects.all()
 
     @staticmethod
-    def resolve_departments(self, info, **kwargs):
-        return Department.objects.all()
+    def resolve_organizations(self, info, **kwargs):
+        return Organization.objects.all()
 
 
-class ProfileMutation(graphene.ObjectType):
+class Mutation(graphene.ObjectType):
     create_profile = CreateProfile.Field()
-    create_department = CreateDepartment.Field()
+    create_organization = CreateOrganization.Field()
     create_org_tier = CreateOrgTier.Field()
     create_address = CreateAddress.Field()
     modify_profile = ModifyProfile.Field()
-    modify_department = ModifyDepartment.Field()
+    modify_organization = ModifyOrganization.Field()
     modify_org_tier = ModifyOrgTier.Field()
     modify_address = ModifyAddress.Field()
     delete_profile = DeleteProfile.Field()
-    delete_department = DeleteDepartment.Field()
+    delete_organization = DeleteOrganization.Field()
     delete_org = DeleteOrgTier.Field()
     delete_address = DeleteAddress.Field()
 
