@@ -7,7 +7,6 @@ pillow
 requests
 PyJWT
 djangorestframework
-
 psycopg2
 gunicorn
 
