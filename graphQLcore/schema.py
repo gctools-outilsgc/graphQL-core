@@ -2,11 +2,11 @@ import graphene
 import profile.schema
 
 
-class Query(profile.schema.Query, graphene.ObjectType):
+class Query(profile.schema.ProfileQuery, graphene.ObjectType):
     pass
 
 
-class Mutation(profile.schema.Mutation, graphene.ObjectType):
+class Mutation(profile.schema.ProfileMutation, graphene.ObjectType):
     pass
 
 

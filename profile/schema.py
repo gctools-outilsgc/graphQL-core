@@ -119,85 +119,85 @@ class ModifyProfile(graphene.Mutation):
         return profile
 
 
-# class CreateProfile(graphene.Mutation):
-#     # ToDo: Change avatar type to a file upload instead of a url/file string
-#     # ToDo: Implement trigger on OIDC to create profile upon registration
-#     gcID = graphene.String()
-#     name = graphene.String()
-#     email = graphene.String()
-#     title_en = graphene.String()
-#     title_fr = graphene.String()
-#     avatar = graphene.String()
-#     mobile_phone = graphene.String()
-#     office_phone = graphene.String()
-#     address = graphene.Field(AddressType)
-#     supervisor = graphene.Field(ProfileType)
-#     org = graphene.Field(OrgTierType)
-#
-#     class Arguments:
-#         gc_id = graphene.String()
-#         name = graphene.String()
-#         email = graphene.String()
-#         optional_data = ProfileOptionalInput(required=False)
-#
-#     @staticmethod
-#     def mutate(self, info, gc_id, name, email, optional_data=None):
-#
-#         filter = (
-#             Q(gcID__iexact=gc_id) |
-#             Q(email__iexact=email)
-#         )
-#         if Profile.objects.filter(filter).exists():
-#             raise Exception('Profile with same unique keys (gcID or email) already exists')
-#
-#         profile = Profile(
-#             gcID=gc_id,
-#             name=name,
-#             email=email,
-#         )
-#
-#         if optional_data is None:
-#             profile.address = None
-#             profile.supervisor = None
-#             profile.org = None
-#         else:
-#             profile.avatar = optional_data.avatar
-#             profile.mobile_phone = optional_data.mobile_phone
-#             profile.office_phone = optional_data.office_phone
-#             profile.title_fr = optional_data.title_fr
-#             profile.title_en = optional_data.title_en
-#
-#             if optional_data.address_id is None:
-#                 profile.address = None
-#             else:
-#                 profile.address = Address.objects.filter(id=optional_data.address_id).first()
-#                 if not profile.address:
-#                     raise Exception('Address ID does not exist')
-#             if optional_data.supervisor_gc_id is None:
-#                 profile.supervisor = None
-#             else:
-#                 profile.supervisor = Profile.objects.filter(gcID=optional_data.supervisor_gc_id).first()
-#                 if not profile.supervisor:
-#                     raise Exception('Supervisor gcID does not exist')
-#             if optional_data.org_id is None:
-#                 profile.org = None
-#             else:
-#                 profile.org = OrgTier.objects.filters(id=optional_data.org_id).first()
-#
-#         profile.save()
-#
-#         return CreateProfile(
-#             gcID=profile.gcID,
-#             name=profile.name,
-#             email=profile.email,
-#             avatar=profile.avatar,
-#             mobile_phone=profile.mobile_phone,
-#             office_phone=profile.office_phone,
-#             address=profile.address,
-#             title_en=profile.title_en,
-#             title_fr=profile.title_fr,
-#             supervisor=profile.supervisor,
-#             org=profile.org,)
+class CreateProfile(graphene.Mutation):
+    # ToDo: Change avatar type to a file upload instead of a url/file string
+    # ToDo: Implement trigger on OIDC to create profile upon registration
+    gcID = graphene.String()
+    name = graphene.String()
+    email = graphene.String()
+    title_en = graphene.String()
+    title_fr = graphene.String()
+    avatar = graphene.String()
+    mobile_phone = graphene.String()
+    office_phone = graphene.String()
+    address = graphene.Field(AddressType)
+    supervisor = graphene.Field(ProfileType)
+    org = graphene.Field(OrgTierType)
+
+    class Arguments:
+        gc_id = graphene.String()
+        name = graphene.String()
+        email = graphene.String()
+        optional_data = ProfileOptionalInput(required=False)
+
+    @staticmethod
+    def mutate(self, info, gc_id, name, email, optional_data=None):
+
+        filter = (
+            Q(gcID__iexact=gc_id) |
+            Q(email__iexact=email)
+        )
+        if Profile.objects.filter(filter).exists():
+            raise Exception('Profile with same unique keys (gcID or email) already exists')
+
+        profile = Profile(
+            gcID=gc_id,
+            name=name,
+            email=email,
+        )
+
+        if optional_data is None:
+            profile.address = None
+            profile.supervisor = None
+            profile.org = None
+        else:
+            profile.avatar = optional_data.avatar
+            profile.mobile_phone = optional_data.mobile_phone
+            profile.office_phone = optional_data.office_phone
+            profile.title_fr = optional_data.title_fr
+            profile.title_en = optional_data.title_en
+
+            if optional_data.address_id is None:
+                profile.address = None
+            else:
+                profile.address = Address.objects.filter(id=optional_data.address_id).first()
+                if not profile.address:
+                    raise Exception('Address ID does not exist')
+            if optional_data.supervisor_gc_id is None:
+                profile.supervisor = None
+            else:
+                profile.supervisor = Profile.objects.filter(gcID=optional_data.supervisor_gc_id).first()
+                if not profile.supervisor:
+                    raise Exception('Supervisor gcID does not exist')
+            if optional_data.org_id is None:
+                profile.org = None
+            else:
+                profile.org = OrgTier.objects.filters(id=optional_data.org_id).first()
+
+        profile.save()
+
+        return CreateProfile(
+            gcID=profile.gcID,
+            name=profile.name,
+            email=profile.email,
+            avatar=profile.avatar,
+            mobile_phone=profile.mobile_phone,
+            office_phone=profile.office_phone,
+            address=profile.address,
+            title_en=profile.title_en,
+            title_fr=profile.title_fr,
+            supervisor=profile.supervisor,
+            org=profile.org,)
 
 
 class DeleteProfile(graphene.Mutation):
@@ -525,7 +525,7 @@ class DeleteAddress(graphene.Mutation):
         return DeleteAddress(successful_delete='True')
 
 
-class Query(graphene.ObjectType):
+class ProfileQuery(graphene.ObjectType):
     profiles = graphene.List(ProfileType, search_name=graphene.String(), gcID=graphene.String())
     addresses = graphene.List(AddressType)
     orgtiers = graphene.List(OrgTierType)
@@ -558,8 +558,7 @@ class Query(graphene.ObjectType):
         return Organization.objects.all()
 
 
-class Mutation(graphene.ObjectType):
-    create_profile = CreateProfile.Field()
+class ProfileMutation(graphene.ObjectType):
     create_organization = CreateOrganization.Field()
     create_org_tier = CreateOrgTier.Field()
     create_address = CreateAddress.Field()
@@ -567,11 +566,18 @@ class Mutation(graphene.ObjectType):
     modify_organization = ModifyOrganization.Field()
     modify_org_tier = ModifyOrgTier.Field()
     modify_address = ModifyAddress.Field()
-    delete_profile = DeleteProfile.Field()
     delete_organization = DeleteOrganization.Field()
     delete_org = DeleteOrgTier.Field()
     delete_address = DeleteAddress.Field()
 
 
+class ProtectedProfileMutation(graphene.ObjectType):
+    delete_profile = DeleteProfile.Field()
+    create_profile = CreateProfile.Field()
 
 
+class ProtectedMutation(ProtectedProfileMutation, graphene.ObjectType):
+    pass
+
+
+schema = graphene.Schema(query=ProfileQuery, mutation=ProtectedMutation)

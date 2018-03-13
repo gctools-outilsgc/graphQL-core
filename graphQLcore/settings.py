@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'graphene_django',
     'profile',
     'Auth',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 ROOT_URLCONF = 'graphQLcore.urls'
 
@@ -123,7 +131,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Graphene
-GRAPHENE ={
+GRAPHENE = {
     'SCHEMA': 'graphQLcore.schema.schema'
 }
 
