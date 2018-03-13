@@ -18,7 +18,6 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 import profile.schema
-from rest_framework.authtoken import views
 # Imports below are for DRF protected GraphQL view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
