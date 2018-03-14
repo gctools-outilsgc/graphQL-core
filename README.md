@@ -18,7 +18,12 @@ Log into the django admin at http://localhost:8000/admin using the newly created
 Create your Profiles, Addreses, and OrgTiers
 
 Access the GraphiQL endpoint at http://localhost:8000/graphiql and query away!
+
 API endpoint for use with applicaitons can be found at http://localhost:8000/graphqlcore
+
+Protected endpoint for management applications is at http://localhost:8000/protected
+
+In order for an application to access the protected endpoint an account will need to be created through Django Admin.  The corresponding token will then need to be sent in each request to the endpoint in the form of:"Authorization: Token {token}"
 
 Current backend for dev testing is sqlite3.  This will be migrated to MariaDB for Prod or Staging setups.
 
