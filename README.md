@@ -13,10 +13,10 @@ Make sure [Docker](https://www.docker.com/) is installed. Then run the following
 Then create a superuser account using:
     docker-compose exec web python manage.py createsuperuser
 
-Now login with your new (superuser) account on http://localhost:8000/admin for Django Admin panel.
+Now login with your new (superuser) account on http://localhost:8080/admin for Django Admin panel.
 GraphQL enpoints are:
-    GraphiQL endpoint at http://localhost:8000/graphiql and query away!
-    API endpoint for use with applicaitons can be found at http://localhost:8000/graphqlcore
+    GraphiQL endpoint at http://localhost:8080/graphiql and query away!
+    API endpoint for use with applicaitons can be found at http://localhost:8080/graphqlcore
 
 DB in docker image uses postgreSQL and is persistent on volume db_volume in the repo once the docker image is run.
 
