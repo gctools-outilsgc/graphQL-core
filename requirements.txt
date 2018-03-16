@@ -5,5 +5,4 @@ graphene-django
 django-filter
 pillow
 requests
-PyJWT
 djangorestframework
