@@ -526,35 +526,116 @@ class DeleteAddress(graphene.Mutation):
 
 
 class ProfileQuery(graphene.ObjectType):
-    profiles = graphene.List(ProfileType, search_name=graphene.String(), gcID=graphene.String())
-    addresses = graphene.List(AddressType)
-    orgtiers = graphene.List(OrgTierType)
-    organization = graphene.List(OrganizationType)
+    profiles = graphene.List(ProfileType, name=graphene.String(), gcID=graphene.String(), email=graphene.String(),
+                             mobile_phone=graphene.String(), office_phone=graphene.String(), title_en=graphene.String(),
+                             title_fr=graphene.String(), first=graphene.Int(), skip=graphene.Int())
+    addresses = graphene.List(AddressType, street_address=graphene.String(), city=graphene.String(), province=graphene.String(),
+                              postal_code=graphene.String(), country=graphene.String(), first=graphene.Int(), skip=graphene.Int())
+    orgtiers = graphene.List(OrgTierType, name_en=graphene.String(), name_fr=graphene.String(), first=graphene.Int(),
+                             skip=graphene.Int())
+    organizations = graphene.List(OrganizationType, name_en=graphene.String(), name_fr=graphene.String(), acronym_en=graphene.String(),
+                                 acronym_fr=graphene.String(), first=graphene.Int(), skip=graphene.Int())
 
     @staticmethod
     # ToDo: Add method to return a URL for avatar instead of file location
-    def resolve_profiles(self, info, search_name=None, gcID=None, **kwargs):
-        if search_name is not None:
-            filter = (
-                Q(name__icontains=search_name)
-            )
-            return Profile.objects.filter(filter)
+    def resolve_profiles(self, info, **kwargs):
 
-        if gcID is not None:
-            return Profile.objects.filter(gcID=gcID)
+        if kwargs is not None:
+            filter = Q()
+            if 'gcID' in kwargs:
+                return Profile.objects.filter(gcID=kwargs.get('gcID'))
+            if 'name' in kwargs:
+                filter.add(Q(name__icontains=kwargs.get('name')), Q.AND)
+            if 'email' in kwargs:
+                filter.add(Q(email__iexact=kwargs.get('email')), Q.AND)
+            if 'mobile_phone' in kwargs:
+                filter.add(Q(mobile_phone__iexact=kwargs.get('mobile_phone')), Q.AND)
+            if 'office_phone' in kwargs:
+                filter.add(Q(office_phone__iexact=kwargs.get('office_phone')), Q.AND)
+            if 'title_en' in kwargs:
+                filter.add(Q(title_en__icontains=kwargs.get('title_en')), Q.AND)
+            if 'title_fr' in kwargs:
+                filter.add(Q(title_fr__icontains=kwargs.get('title_fr')), Q.AND)
+
+            qs = Profile.objects.filter(filter)
+
+            if 'skip' in kwargs:
+                qs = qs[kwargs.get('skip')::]
+            if 'first' in kwargs:
+                qs = qs[:kwargs.get('first')]
+
+            return qs
 
         return Profile.objects.all()
 
     @staticmethod
     def resolve_addresses(self, info, **kwargs):
+        if kwargs is not None:
+            filter = Q()
+            if 'street_address' in kwargs:
+                filter.add(Q(street_address__icontains=kwargs.get('street_address')), Q.AND)
+            if 'city' in kwargs:
+                filter.add(Q(city__icontains=kwargs.get('city')), Q.AND)
+            if 'province' in kwargs:
+                filter.add(Q(province__iexact=kwargs.get('province')), Q.AND)
+            if 'postal_code' in kwargs:
+                filter.add(Q(postal_code__iexact=kwargs.get('postal_code')), Q.AND)
+            if 'country' in kwargs:
+                filter.add(Q(country__iexact=kwargs.get('country')), Q.AND)
+
+            qs = Address.objects.filter(filter)
+
+            if 'skip' in kwargs:
+                qs = qs[kwargs.get('skip')::]
+            if 'first' in kwargs:
+                qs = qs[:kwargs.get('first')]
+
+            return qs
+
         return Address.objects.all()
 
     @staticmethod
     def resolve_orgtiers(self, info, **kwargs):
+        if kwargs is not None:
+            filter = Q()
+            if 'name_en' in kwargs:
+                filter.add(Q(name_en__icontains=kwargs.get('name_en')), Q.AND)
+            if 'name_fr' in kwargs:
+                filter.add(Q(name_fr__icontains=kwargs.get('name_fr')), Q.AND)
+
+            qs = OrgTier.objects.filter(filter)
+
+            if 'skip' in kwargs:
+                qs = qs[kwargs.get('skip')::]
+            if 'first' in kwargs:
+                qs = qs[:kwargs.get('first')]
+
+            return qs
+
         return OrgTier.objects.all()
 
     @staticmethod
     def resolve_organizations(self, info, **kwargs):
+        if kwargs is not None:
+            filter = Q()
+            if 'name_en' in kwargs:
+                filter.add(Q(name_en__icontains=kwargs.get('name_en')), Q.AND)
+            if 'name_fr' in kwargs:
+                filter.add(Q(name_fr__icontains=kwargs.get('name_en')), Q.AND)
+            if 'acronym_en' in kwargs:
+                filter.add(Q(acronym_en__iexact=kwargs.get('acronym_en')), Q.AND)
+            if 'acronym_fr' in kwargs:
+                filter.add(Q(acronym_fr__iexact=kwargs.get('acronym_fr')), Q.AND)
+
+            qs = Organization.objects.filter(filter)
+
+            if 'skip' in kwargs:
+                qs = qs[kwargs.get('skip')::]
+            if 'first' in kwargs:
+                qs = qs[:kwargs.get('first')]
+
+            return qs
+
         return Organization.objects.all()
 
 
