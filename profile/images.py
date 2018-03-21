@@ -11,27 +11,35 @@ class AvatarImage:
         files = info.context.FILES
         if files is None:
             return None
+
+        tmp_name = os.path.join('temp/', str(uuid.uuid4()))
+        post = False
+
         if 'avatar' in files:
-            tmp_name = os.path.join('temp/', str(uuid.uuid4()))
+
             img = PIL.Image.open(files['avatar'])
             img = img.resize((300,300))
             img.save(tmp_name, 'JPEG')
             img.close()
+            post = True
 
-        url = "http://127.0.0.1/backend.php"
-        files = {'postimage': open(tmp_name, 'rb')}
+        if post:
+            url = "http://127.0.0.1/backend.php"
+            files = {'postimage': open(tmp_name, 'rb')}
 
-        response = requests.post(url, files=files)
+            response = requests.post(url, files=files)
 
-        os.remove(tmp_name)
+            os.remove(tmp_name)
 
-        if not response.status_code == requests.codes.ok:
-            raise Exception('Server Access Error')
+            if not response.status_code == requests.codes.ok:
+                raise Exception('Server Access Error')
 
-        response = response.json()
-        if 'status' in response:
-            if response.get('status') == "OK":
-                return response.get(url)
+            response = response.json()
+            if 'status' in response:
+                if response.get('status') == "OK":
+                    return response.get('url')
+
+        return None
 
 
 
