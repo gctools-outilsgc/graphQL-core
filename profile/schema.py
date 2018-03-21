@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from .models import Profile, Address, OrgTier, Organization
 from django.db.models import Q
+from .images import AvatarImage
 import Auth.auth
 
 
@@ -42,7 +43,6 @@ class ModifyProfileInput(graphene.InputObjectType):
     email = graphene.String(required=False, default_value=None)
     title_en = graphene.String(required=False, default_value=None)
     title_fr = graphene.String(required=False, default_value=None)
-    avatar = graphene.String(required=False, default_value=None)
     mobile_phone = graphene.String(required=False, default_value=None)
     office_phone = graphene.String(required=False, default_value=None)
     address_id = graphene.Int(required=False, default_value=None)
@@ -68,7 +68,10 @@ class ModifyProfile(graphene.Mutation):
     class Arguments:
         gc_id = graphene.String(description='An individuals unique identifier as provided by the "sub" field from oidc'
                                             ' provider in identity token')
-        data_to_modify = ModifyProfileInput(required=True, description='A dict of values to modify')
+        data_to_modify = ModifyProfileInput(required=True, description='A dict of values to modify. To upload an avatar'
+                                                                       ' include the file in the POST request with the'
+                                                                       ' name "avatar". The avatar field will not be'
+                                                                       ' used and is for information only')
 
     @staticmethod
     def mutate(self, info, gc_id, data_to_modify):
@@ -90,8 +93,6 @@ class ModifyProfile(graphene.Mutation):
             profile.title_en = data_to_modify.title_en
         if data_to_modify.title_fr is not None:
             profile.title_fr = data_to_modify.title_fr
-        if data_to_modify.avatar is not None:
-            profile.avatar = data_to_modify.avatar
         if data_to_modify.mobile_phone is not None:
             profile.mobile_phone = data_to_modify.mobile_phone
         if data_to_modify.office_phone is not None:
@@ -114,6 +115,10 @@ class ModifyProfile(graphene.Mutation):
                 profile.org = org
             else:
                 return Exception('Could not fin Org Tier id')
+
+        img_url = AvatarImage.setimage(self, info)
+        if img_url is not None:
+            profile.avatar = img_url
 
         profile.save()
         return profile
