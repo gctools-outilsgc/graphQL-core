@@ -362,7 +362,7 @@ class CreateOrgTier(graphene.Mutation):
         return CreateOrgTier(
             name_en=orgtier.name_en,
             name_fr=orgtier.name_fr,
-            department=orgtier.organization,
+            organization=orgtier.organization,
             ownerID=orgtier.organization
         )
 
