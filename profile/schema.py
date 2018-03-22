@@ -243,7 +243,7 @@ class CreateOrganization(graphene.Mutation):
             Q(acronym_fr__iexact=acronym_fr)
         )
         if Organization.objects.filter(filter).exists():
-            raise Exception('Department with that information already exists')
+            raise Exception('Organization with that information already exists')
 
         organization = Organization(
             name_en=name_en,
@@ -281,7 +281,7 @@ class ModifyOrganization(graphene.Mutation):
     def mutate(self, info, organization_id, data_to_modify):
         organization = Organization.objects.get(id=organization_id)
         if organization is None:
-            raise Exception('Department ID does not exist')
+            raise Exception('Organization ID does not exist')
         if data_to_modify.name_en is not None:
             organization.name_en = data_to_modify.name_en
         if data_to_modify.name_fr is not None:
@@ -300,12 +300,12 @@ class DeleteOrganization(graphene.Mutation):
     successful_delete = graphene.String()
 
     class Arguments:
-        department_id = graphene.Int()
+        organization_id = graphene.Int()
 
     def mutate(self, info, organization_id):
         organization = Organization.objects.get(id=organization_id)
         if organization is None:
-            raise Exception('Department ID does not exist')
+            raise Exception('organization ID does not exist')
 
         organization.delete()
         return DeleteOrganization(successful_delete='True')
@@ -329,7 +329,7 @@ class CreateOrgTier(graphene.Mutation):
         filter = (
             Q(name_en__iexact=name_en) &
             Q(name_fr__iexact=name_fr) &
-            Q(department__id__exact=organization_id)
+            Q(organization__id__exact=organization_id)
         )
 
         if OrgTier.objects.filter(filter).exists():
@@ -351,7 +351,7 @@ class CreateOrgTier(graphene.Mutation):
         else:
             orgtier.organization = Organization.objects.filter(id=organization_id).first()
             if not orgtier.organization:
-                raise Exception('Could not find Department ID')
+                raise Exception('Could not find Organization ID')
 
         orgtier.save()
         return CreateOrgTier(
