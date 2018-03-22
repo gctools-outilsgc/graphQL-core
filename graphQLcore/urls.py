@@ -43,6 +43,6 @@ urlpatterns = [
     path(r'admin/', admin.site.urls),
     path(r'protected/', ProtectedGraphQLView.as_view(schema=profile.schema.schema)),
     path(r'graphiql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
-    path(r'graphqlcore/', GraphQLView.as_view()),
+    path(r'graphqlcore/', csrf_exempt(GraphQLView.as_view())),
 
 ]

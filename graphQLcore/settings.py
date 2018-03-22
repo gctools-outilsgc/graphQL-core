@@ -136,3 +136,5 @@ GRAPHENE = {
 }
 
 OIDC_USERINFO_ENDPOINT = 'http://localhost:8000/openid/userinfo'
+
+IMAGE_SERVER_API_URL = 'http://imageserver/backend.php'
