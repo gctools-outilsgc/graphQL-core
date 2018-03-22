@@ -24,10 +24,9 @@ class AvatarImage:
             post = True
 
         if post:
-            url = "http://127.0.0.1/backend.php"
             files = {'postimage': open(tmp_name, 'rb')}
 
-            response = requests.post(url, files=files)
+            response = requests.post(settings.IMAGE_SERVER_API_URL, files=files)
 
             os.remove(tmp_name)
 
