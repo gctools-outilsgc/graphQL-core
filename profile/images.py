@@ -26,12 +26,12 @@ class AvatarImage:
         if post:
             files = {'postimage': open(tmp_name, 'rb')}
 
-            response = requests.post(settings.IMAGE_SERVER_API_URL, files=files)
 
             os.remove(tmp_name)
 
             if not response.status_code == requests.codes.ok:
                 raise Exception('Server Access Error')
+                raise Exception('Server Access Error / ' + response.status_code)
 
             response = response.json()
             if 'status' in response:

@@ -25,5 +25,5 @@ SITE_URL = os.getenv('SITE_URL', None)
 
 OIDC_USERINFO_ENDPOINT = os.getenv('OIDC_USERINFO_ENDPOINT')
 
-IMAGE_SERVER_API_URL = os.join(os.getenv('IMAGE_SERVER_URL'), '/backend.php')
+IMAGE_SERVER_API_URL = os.path.join(os.getenv('IMAGE_SERVER_API_URL'), '/backend.php')
 
