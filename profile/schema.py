@@ -381,7 +381,7 @@ class ModifyOrgTier(graphene.Mutation):
 
     @staticmethod
     def mutate(self, info, org_id, data_to_modify):
-        profile = None
+
         org = OrgTier.objects.get(id=org_id)
         if org is None:
             raise Exception('Could not find Org Tier ID')
@@ -398,11 +398,10 @@ class ModifyOrgTier(graphene.Mutation):
                 raise Exception('Could not find Organization ID')
         if data_to_modify.owner_gc_id is not None:
             profile = Profile.objects.get(gcID=data_to_modify.owner_gc_id)
-        if profile is None:
-            raise Exception('Could not find Org Owner ID')
-        else:
-            org.ownerID = profile
-
+            if profile is None:
+                raise Exception('Could not find Org Owner ID')
+            else:
+                org.ownerID = profile
         org.save()
 
         return org
