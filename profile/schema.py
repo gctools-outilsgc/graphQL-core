@@ -381,6 +381,7 @@ class ModifyOrgTier(graphene.Mutation):
 
     @staticmethod
     def mutate(self, info, org_id, data_to_modify):
+        profile = None
         org = OrgTier.objects.get(id=org_id)
         if org is None:
             raise Exception('Could not find Org Tier ID')
