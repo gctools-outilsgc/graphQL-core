@@ -38,9 +38,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -117,4 +117,14 @@ GRAPHENE = {
 OIDC_USERINFO_ENDPOINT = 'http://localhost:8000/openid/userinfo'
 
 # CORS Setting
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
+
+# Load server list and freeze
+from connector import Server
+
+def load_server_list():
+    for s in SERVER_LIST:  # from CUSTOM_SETTINGS_MAPPINGS  # noqa
+        server = (len(s) > 2) and unicode(s[2]) or None
+        Server(host=unicode(s[0]), port=int(s[1]), server=server)
+    Server.freeze()
+load_server_list()
