@@ -531,15 +531,17 @@ class DeleteAddress(graphene.Mutation):
 
 
 class ProfileQuery(graphene.ObjectType):
-    profiles = graphene.List(ProfileType, name=graphene.String(), gcID=graphene.String(), email=graphene.String(),
-                             mobile_phone=graphene.String(), office_phone=graphene.String(), title_en=graphene.String(),
-                             title_fr=graphene.String(), first=graphene.Int(), skip=graphene.Int())
+    profiles = graphene.List(ProfileType, gcID=graphene.String(), name=graphene.String(), email=graphene.String(),
+                             mobile_phone=graphene.String(), office_phone=graphene.String(),
+                             title_en=graphene.String(), title_fr=graphene.String(), first=graphene.Int(),
+                             skip=graphene.Int())
     addresses = graphene.List(AddressType, street_address=graphene.String(), city=graphene.String(), province=graphene.String(),
                               postal_code=graphene.String(), country=graphene.String(), first=graphene.Int(), skip=graphene.Int())
     orgtiers = graphene.List(OrgTierType, name_en=graphene.String(), name_fr=graphene.String(), first=graphene.Int(),
                              skip=graphene.Int())
-    organizations = graphene.List(OrganizationType, name_en=graphene.String(), name_fr=graphene.String(), acronym_en=graphene.String(),
-                                 acronym_fr=graphene.String(), first=graphene.Int(), skip=graphene.Int())
+    organizations = graphene.List(OrganizationType, name_en=graphene.String(), name_fr=graphene.String(),
+                                  acronym_en=graphene.String(), acronym_fr=graphene.String(), first=graphene.Int(),
+                                  skip=graphene.Int())
 
     @staticmethod
     # ToDo: Add method to return a URL for avatar instead of file location
