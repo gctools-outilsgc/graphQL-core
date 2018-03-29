@@ -113,3 +113,5 @@ STATIC_URL = '/static/'
 GRAPHENE = {
     'SCHEMA': 'graphQLcore.schema.schema'
 }
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True
