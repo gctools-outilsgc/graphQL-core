@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'profile',
     'Auth',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
     'corsheaders',
 ]
 
