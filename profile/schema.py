@@ -668,4 +668,8 @@ class ProtectedMutation(ProtectedProfileMutation, graphene.ObjectType):
     pass
 
 
-schema = graphene.Schema(query=ProfileQuery, mutation=ProtectedMutation)
+class ProtectedQuery(ProfileQuery, graphene.ObjectType):
+    pass
+
+
+schema = graphene.Schema(query=ProtectedQuery, mutation=ProtectedMutation)
