@@ -24,7 +24,7 @@ class AvatarImage:
             post = True
 
         if post:
-            files = {'postimage': open(tmp_name, 'rb')}
+            files = {'postimage': open(tmp_name + '.jpg', 'rb')}
 
             response = requests.post(settings.IMAGE_SERVER_API_URL, files=files)
 
