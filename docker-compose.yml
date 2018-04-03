@@ -15,7 +15,6 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - OIDC_USERINFO_ENDPOINT=http://172.20.0.3:8000/openid/userinfo
-      - IMAGE_SERVER_API_URL=http://image
     ports:
       - "8080:8000"
     depends_on:
