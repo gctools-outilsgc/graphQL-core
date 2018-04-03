@@ -23,6 +23,7 @@ RUN mkdir /stage
 COPY ./docker/config.py /stage/app/graphQLcore/config.py
 COPY ./docker/start.sh /stage/start.sh
 COPY . /stage/app
+RUN mkdir /stage/temp
 RUN rm -rf /stage/app/assets
 RUN chmod +x /stage/start.sh
 
