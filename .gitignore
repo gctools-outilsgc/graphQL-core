@@ -62,3 +62,6 @@ venv/
 
 # Temp DB for dev
 db.sqlite3
+db_volume/
+
+temp/

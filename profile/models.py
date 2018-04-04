@@ -6,7 +6,7 @@ class Profile(models.Model):
     gcID = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(null=False, blank=False, max_length=100)
     email = models.EmailField(max_length=255, unique=True)
-    avatar = models.ImageField(upload_to=unique_filepath, null=True, blank=True)
+    avatar = models.URLField(null=True, blank=True)
     mobile_phone = models.CharField(null=True, blank=True, max_length=15)
     office_phone = models.CharField(null=True, blank=True, max_length=15)
     address = models.ForeignKey('Address', null=True, on_delete=models.SET_NULL)
