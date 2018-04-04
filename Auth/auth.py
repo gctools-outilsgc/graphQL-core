@@ -19,9 +19,10 @@ def check_token(self, info, scopes=None, **kwargs):
     if auth_header is None:
         raise Exception('No Access token provided for protected resource')
 
-    response = requests.get(settings.OIDC_USERINFO_ENDPOINT, headers={'Authorization': auth_header})
+    response = requests.get(str(settings.OIDC_USERINFO_ENDPOINT), headers={'Authorization': auth_header})
+
     if not response.status_code == requests.codes.ok:
-        raise Exception('Invalid Access Token')
+        raise Exception('Invalid Access Token / Server Response ' + str(response.status_code))
     else:
         response = response.json()
 
