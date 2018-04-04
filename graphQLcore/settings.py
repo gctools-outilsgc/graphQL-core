@@ -41,6 +41,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -113,9 +114,5 @@ STATIC_URL = '/static/'
 GRAPHENE = {
     'SCHEMA': 'graphQLcore.schema.schema'
 }
-
-OIDC_USERINFO_ENDPOINT = 'http://localhost:8000/openid/userinfo'
-
-# CORS Setting
+# CORS
 CORS_ORIGIN_ALLOW_ALL = True
-

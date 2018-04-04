@@ -62,6 +62,6 @@ venv/
 
 # Temp DB for dev
 db.sqlite3
-
-# Database volume in docker
 db_volume/
+
+temp/

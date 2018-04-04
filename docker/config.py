@@ -23,3 +23,5 @@ TIME_ZONE = 'America/Toronto'
 
 SITE_URL = os.getenv('SITE_URL', None)
 
+OIDC_USERINFO_ENDPOINT = os.getenv('OIDC_USERINFO_ENDPOINT')
+
