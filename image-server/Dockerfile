@@ -44,6 +44,8 @@ RUN chown -Rf nginx:nginx /usr/share/nginx/html
 
 WORKDIR /usr/share/nginx/html
 RUN git clone https://github.com/gctools-outilsgc/Image-Resource-Server.git .
+RUN git checkout master
+RUN git pull
 
 VOLUME /usr/share/nginx/html/upload
 

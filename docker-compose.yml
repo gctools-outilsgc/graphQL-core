@@ -26,6 +26,8 @@ services:
       - ./volumes/upload:/opt/pictshare/upload
     environment:
       - TITLE=Meerkat-Image-Server
+      - DOMAIN=https://avatar.gccollab.ca
+      - LOWPROFILE=True
     ports:
     - "80:80"
 
