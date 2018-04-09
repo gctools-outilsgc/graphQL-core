@@ -18,7 +18,8 @@ class AvatarImage:
         if 'avatar' in files:
 
             img = PIL.Image.open(files['avatar'])
-            img = img.resize((300,300))
+            img = img.resize((300, 300))
+            img.convert('RGB')
             img.save(tmp_name, 'JPEG')
             img.close()
             post = True
