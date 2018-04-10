@@ -37,96 +37,8 @@ class ProfileOptionalInput(graphene.InputObjectType):
     org_id = graphene.Int(required=False, default_value=None)
 
 
-class ModifyProfileInput(graphene.InputObjectType):
-
-    name = graphene.String(required=False, default_value=None)
-    email = graphene.String(required=False, default_value=None)
-    title_en = graphene.String(required=False, default_value=None)
-    title_fr = graphene.String(required=False, default_value=None)
-    mobile_phone = graphene.String(required=False, default_value=None)
-    office_phone = graphene.String(required=False, default_value=None)
-    address_id = graphene.Int(required=False, default_value=None)
-    supervisor_gc_id = graphene.String(required=False, default_value=None)
-    org_id = graphene.Int(required=False, default_value=None)
-
-
-class ModifyProfile(graphene.Mutation):
-    # ToDo: Change avatar type to a file upload instead of a url/file string
-
-    gcID = graphene.String()
-    name = graphene.String()
-    email = graphene.String()
-    title_en = graphene.String()
-    title_fr = graphene.String()
-    avatar = graphene.String()
-    mobile_phone = graphene.String()
-    office_phone = graphene.String()
-    address = graphene.Field(AddressType)
-    supervisor = graphene.Field(ProfileType)
-    org = graphene.Field(OrgTierType)
-
-    class Arguments:
-        gc_id = graphene.String(description='An individuals unique identifier as provided by the "sub" field from oidc'
-                                            ' provider in identity token')
-        data_to_modify = ModifyProfileInput(required=True, description='A dict of values to modify. To upload an avatar'
-                                                                       ' include the file in the POST request with the'
-                                                                       ' name "avatar". The avatar field will not be'
-                                                                       ' used and is for information only')
-
-    @staticmethod
-    def mutate(self, info, gc_id, data_to_modify):
-
-        scopes = {'modify_profile'}
-        kwargs = {'gcID': gc_id}
-
-        if not Auth.auth.check_token(self, info, scopes, **kwargs):
-            raise Exception('Not authorized to modify profile')
-
-        profile = Profile.objects.get(gcID=gc_id)
-        if profile is None:
-            raise Exception('Could not find that profile')
-        if data_to_modify.name is not None:
-            profile.name = data_to_modify.name
-        if data_to_modify.email is not None:
-            profile.email = data_to_modify.email
-        if data_to_modify.title_en is not None:
-            profile.title_en = data_to_modify.title_en
-        if data_to_modify.title_fr is not None:
-            profile.title_fr = data_to_modify.title_fr
-        if data_to_modify.mobile_phone is not None:
-            profile.mobile_phone = data_to_modify.mobile_phone
-        if data_to_modify.office_phone is not None:
-            profile.office_phone = data_to_modify.office_phone
-        if data_to_modify.address_id is not None:
-            address = Address.objects.get(id=data_to_modify.address_id)
-            if address is not None:
-                profile.address = address
-            else:
-                raise Exception('Could not find address with that id')
-        if data_to_modify.supervisor_gc_id is not None:
-            supervisor = Profile.objects.get(gcID=data_to_modify.supervisor_gc_id)
-            if supervisor is not None:
-                profile.supervisor = supervisor
-            else:
-                raise Exception('Could not find supervisor id')
-        if data_to_modify.org_id is not None:
-            org = OrgTier.objects.get(id=data_to_modify.org_id)
-            if org is not None:
-                profile.org = org
-            else:
-                return Exception('Could not fin Org Tier id')
-
-        img_url = AvatarImage.setimage(self, info)
-        if img_url is not None:
-            profile.avatar = img_url
-
-        profile.save()
-        return profile
-
-
 class CreateProfile(graphene.Mutation):
-    # ToDo: Change avatar type to a file upload instead of a url/file string
-    # ToDo: Implement trigger on OIDC to create profile upon registration
+
     gcID = graphene.String()
     name = graphene.String()
     email = graphene.String()
@@ -149,8 +61,8 @@ class CreateProfile(graphene.Mutation):
     def mutate(self, info, gc_id, name, email, optional_data=None):
 
         filter = (
-            Q(gcID__iexact=gc_id) |
-            Q(email__iexact=email)
+                Q(gcID__iexact=gc_id) |
+                Q(email__iexact=email)
         )
         if Profile.objects.filter(filter).exists():
             raise Exception('Profile with same unique keys (gcID or email) already exists')
@@ -202,7 +114,128 @@ class CreateProfile(graphene.Mutation):
             title_en=profile.title_en,
             title_fr=profile.title_fr,
             supervisor=profile.supervisor,
-            org=profile.org,)
+            org=profile.org, )
+
+
+class ModifyProfileAddressInput(graphene.InputObjectType):
+    street_address = graphene.String(required=False, default_value=None)
+    city = graphene.String(required=False, default_value=None)
+    province = graphene.String(required=False, default_value=None)
+    postal_code = graphene.String(required=False, default_value=None)
+    country = graphene.String(required=False, default_value=None)
+
+
+class ModifyProfileSupervisorInput(graphene.InputObjectType):
+    gc_id = graphene.String()
+
+
+class ModifyProfileOrgTierInput(graphene.InputObjectType):
+    org_id = graphene.Int()
+
+
+class ModifyProfileInput(graphene.InputObjectType):
+
+    name = graphene.String(required=False, default_value=None)
+    email = graphene.String(required=False, default_value=None)
+    title_en = graphene.String(required=False, default_value=None)
+    title_fr = graphene.String(required=False, default_value=None)
+    mobile_phone = graphene.String(required=False, default_value=None)
+    office_phone = graphene.String(required=False, default_value=None)
+    address = ModifyProfileAddressInput(required=False, description='Address modifier for Profile')
+    supervisor = ModifyProfileSupervisorInput(required=False, description='Supervisor modifier for Profile')
+    org = ModifyProfileOrgTierInput(required=False, description='Org Tier modifier for Profile')
+
+
+class ModifyProfile(graphene.Mutation):
+    # ToDo: Change avatar type to a file upload instead of a url/file string
+
+    gcID = graphene.String()
+    name = graphene.String()
+    email = graphene.String()
+    title_en = graphene.String()
+    title_fr = graphene.String()
+    avatar = graphene.String()
+    mobile_phone = graphene.String()
+    office_phone = graphene.String()
+    address = graphene.Field(AddressType)
+    supervisor = graphene.Field(ProfileType)
+    org = graphene.Field(OrgTierType)
+
+    class Arguments:
+        gc_id = graphene.String(required=True, description='An individuals unique identifier as provided by the "sub"'
+                                                           ' field from oidc provider in identity token')
+        profile_info = ModifyProfileInput(required=True, description='A dict of values to modify. To upload an avatar'
+                                                                       ' include the file in the POST request with the'
+                                                                       ' name "avatar". The avatar field will not be'
+                                                                       ' used and is for information only')
+
+    @staticmethod
+    def mutate(self, info, gc_id, profile_info):
+
+        scopes = {'modify_profile'}
+        kwargs = {'gcID': gc_id}
+
+        if not Auth.auth.check_token(self, info, scopes, **kwargs):
+            raise Exception('Not authorized to modify profile')
+
+        profile = Profile.objects.get(gcID=gc_id)
+        if profile is None:
+            raise Exception('Could not find that profile')
+        if profile_info.name is not None:
+            profile.name = profile_info.name
+        if profile_info.email is not None:
+            profile.email = profile_info.email
+        if profile_info.title_en is not None:
+            profile.title_en = profile_info.title_en
+        if profile_info.title_fr is not None:
+            profile.title_fr = profile_info.title_fr
+        if profile_info.mobile_phone is not None:
+            profile.mobile_phone = profile_info.mobile_phone
+        if profile_info.office_phone is not None:
+            profile.office_phone = profile_info.office_phone
+
+        if profile_info.address is not None:
+            if profile.address is not None:
+                if profile_info.address.street_address is not None:
+                    profile.address.street_address = profile_info.address.street_address
+                if profile_info.address.city is not None:
+                    profile.address.city = profile_info.address.city
+                if profile_info.address.province is not None:
+                    profile.address.province = profile_info.address.province
+                if profile_info.address.postal_code is not None:
+                    profile.address.postal_code = profile_info.address.postal_code
+                if profile_info.address.country is not None:
+                    profile.address.country = profile_info.address.country
+            else:
+
+                address = Address(street_address=profile_info.address.street_address,
+                                          city=profile_info.address.city,
+                                          province=profile_info.address.province,
+                                          postal_code=profile_info.address.postal_code,
+                                          country=profile_info.address.country)
+                address.save()
+                profile.address = address
+
+        if profile_info.supervisor is not None:
+            supervisor = Profile.objects.get(gcID=profile_info.supervisor.gc_id)
+            if supervisor is not None:
+                profile.supervisor = supervisor
+            else:
+                raise Exception('Could not find supervisor id')
+
+        if profile_info.org is not None:
+            org = OrgTier.objects.get(id=profile_info.org.org_id)
+            if org is not None:
+                profile.org = org
+            else:
+                return Exception('Could not fin Org Tier id')
+
+        img_url = AvatarImage.setimage(self, info)
+        if img_url is not None:
+            profile.avatar = img_url
+
+        profile.save()
+        return profile
 
 
 class DeleteProfile(graphene.Mutation):
@@ -222,6 +255,8 @@ class DeleteProfile(graphene.Mutation):
             raise Exception('Profile does not exist')
 
         else:
+            address = Address.objects.get(id=profile.address.id)
+            address.delete()
             profile.delete()
             return DeleteProfile(successful_delete="True")
 
@@ -428,108 +463,6 @@ class DeleteOrgTier(graphene.Mutation):
         return DeleteOrgTier(successful_delete='True')
 
 
-class ModifyAddressInput(graphene.InputObjectType):
-    street_address = graphene.String(required=False, default_value=None)
-    city = graphene.String(required=False, default_value=None)
-    province = graphene.String(required=False, default_value=None)
-    postal_code = graphene.String(required=False, default_value=None)
-    country = graphene.String(required=False, default_value=None)
-
-
-class ModifyAddress(graphene.Mutation):
-    street_address = graphene.String()
-    city = graphene.String()
-    province = graphene.String()
-    postal_code = graphene.String()
-    country = graphene.String()
-
-    class Arguments:
-        address_id = graphene.Int()
-        data_to_modify = ModifyAddressInput(required=True)
-
-    @staticmethod
-    def mutate(self, info, address_id, data_to_modify):
-        address = Address.objects.get(id=address_id)
-        if address is None:
-            raise Exception('Could not find Address ID')
-        if data_to_modify.street_address is not None:
-            address.street_address = data_to_modify.street_address
-        if data_to_modify.city is not None:
-            address.city = data_to_modify.city
-        if data_to_modify.province is not None:
-            address.province = data_to_modify.province
-        if data_to_modify.postal_code is not None:
-            address.postal_code = data_to_modify.postal_code
-        if data_to_modify.country is not None:
-            address.country = data_to_modify.country
-
-        address.save()
-
-        return address
-
-
-class CreateAddress(graphene.Mutation):
-    street_address = graphene.String()
-    city = graphene.String()
-    province = graphene.String()
-    postal_code = graphene.String()
-    country = graphene.String(default_value="Canada")
-
-    class Arguments:
-        street_address = graphene.String()
-        city = graphene.String()
-        province = graphene.String()
-        postal_code = graphene.String()
-        country = graphene.String()
-
-    @staticmethod
-    def mutate(self, info, street_address, city, province, postal_code, country):
-
-        filter = (
-            Q(street_address__iexact=street_address) &
-            Q(city__iexact=city) &
-            Q(province__iexact=province) &
-            Q(postal_code__iexact=postal_code) &
-            Q(country__iexact=country)
-        )
-
-        if Address.objects.filter(filter).exists():
-            raise Exception('Address with that information already exists')
-
-        address = Address(
-            street_address=street_address,
-            city=city,
-            province=province,
-            postal_code=postal_code,
-            country=country,
-        )
-        address.save()
-
-        return CreateAddress(
-            street_address=address.street_address,
-            city=address.city,
-            province=address.province,
-            postal_code=address.postal_code,
-            country=address.country,
-        )
-
-
-class DeleteAddress(graphene.Mutation):
-    successful_delete = graphene.String()
-
-    class Arguments:
-        address_id = graphene.Int()
-
-    def mutate(self, info, address_id):
-        address = Address.objects.get(id=address_id)
-        if address is None:
-            raise Exception('Address ID does not exist')
-
-        address.delete()
-
-        return DeleteAddress(successful_delete='True')
-
-
 class ProfileQuery(graphene.ObjectType):
     profiles = graphene.List(ProfileType, gcID=graphene.String(), name=graphene.String(), email=graphene.String(),
                              mobile_phone=graphene.String(), office_phone=graphene.String(),
@@ -647,21 +580,19 @@ class ProfileQuery(graphene.ObjectType):
 
 
 class ProfileMutation(graphene.ObjectType):
-    create_organization = CreateOrganization.Field()
-    create_org_tier = CreateOrgTier.Field()
-    create_address = CreateAddress.Field()
+
     modify_profile = ModifyProfile.Field()
-    modify_organization = ModifyOrganization.Field()
+    create_org_tier = CreateOrgTier.Field()
     modify_org_tier = ModifyOrgTier.Field()
-    modify_address = ModifyAddress.Field()
-    delete_organization = DeleteOrganization.Field()
-    delete_org = DeleteOrgTier.Field()
-    delete_address = DeleteAddress.Field()
+    delete_org_tier = DeleteOrgTier.Field()
 
 
 class ProtectedProfileMutation(graphene.ObjectType):
     delete_profile = DeleteProfile.Field()
     create_profile = CreateProfile.Field()
+    create_organization = CreateOrganization.Field()
+    delete_organization = DeleteOrganization.Field()
+    modify_organization = ModifyOrganization.Field()
 
 
 class ProtectedMutation(ProtectedProfileMutation, graphene.ObjectType):
