@@ -206,6 +206,7 @@ class ModifyProfile(graphene.Mutation):
                     profile.address.postal_code = profile_info.address.postal_code
                 if profile_info.address.country is not None:
                     profile.address.country = profile_info.address.country
+                profile.address.save()
             else:
 
                 address = Address(street_address=profile_info.address.street_address,
