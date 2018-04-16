@@ -15,6 +15,7 @@ RUN apk --no-cache add \
 
 WORKDIR /app
 COPY requirements.txt /app
+RUN /app/evn/bin/pip install --upgrade pip
 RUN /app/env/bin/pip install -r requirements.txt
 
 # Stage 2 - Create new layer from multiple steps
