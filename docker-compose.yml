@@ -3,6 +3,8 @@ version: '3'
 services:
   db:
     image: postgres
+    volumes:
+      - ./volumes/db:/var/lib/postgresql/data
   web:
     build: .
     environment:
