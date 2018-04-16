@@ -18,7 +18,5 @@ echo "Apply database migrations"
 python manage.py migrate
 
 # Start Gunicorn processes
-echo "Starting Gunicorn"
-exec gunicorn graphQLcore.wsgi:application \
-    --bind 0.0.0.0:8000 \
-    --workers 3
+echo "Starting Web Server"
+uwsgi --http :8000 --module graphQLcore.wsgi --static-map /static=/app/static
