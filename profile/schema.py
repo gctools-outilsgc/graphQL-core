@@ -126,11 +126,11 @@ class ModifyProfileAddressInput(graphene.InputObjectType):
 
 
 class ModifyProfileSupervisorInput(graphene.InputObjectType):
-    gc_id = graphene.String()
+    gc_id = graphene.String(required=False, default_value=None)
 
 
 class ModifyProfileOrgTierInput(graphene.InputObjectType):
-    org_id = graphene.Int()
+    org_id = graphene.Int(required=False, default_value=None)
 
 
 class ModifyProfileInput(graphene.InputObjectType):
@@ -218,18 +218,27 @@ class ModifyProfile(graphene.Mutation):
                 profile.address = address
 
         if profile_info.supervisor is not None:
-            supervisor = Profile.objects.get(gcID=profile_info.supervisor.gc_id)
-            if supervisor is not None:
-                profile.supervisor = supervisor
+            supervisorId = profile_info.supervisor.get('gc_id')
+            if supervisorId is not None:
+                supervisor = Profile.objects.get(gcID=supervisorId)
+                if supervisor is not None:
+                    profile.supervisor = supervisor
+                else:
+                    raise Exception('Could not find supervisor id')
             else:
-                raise Exception('Could not find supervisor id')
+                profile.supervisor = None
 
         if profile_info.org is not None:
-            org = OrgTier.objects.get(id=profile_info.org.org_id)
-            if org is not None:
-                profile.org = org
+            orgId = profile_info.org.get('org_id')
+            if orgId is not None:
+                org = OrgTier.objects.get(id=orgId)
+                if org is not None:
+                    profile.org = org
+                else:
+                    return Exception('Could not find Org Tier id')
             else:
-                return Exception('Could not fin Org Tier id')
+                profile.org = None
+
 
         img_url = AvatarImage.setimage(self, info)
         if img_url is not None:
