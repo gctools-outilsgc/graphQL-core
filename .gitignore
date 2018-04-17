@@ -64,6 +64,9 @@ venv/
 # Temp DB for dev
 db.sqlite3
 
+# Temp config file
+graphQLcore/config.py
+
 # Volume for Avatars/Image Server
 volumes/
 
