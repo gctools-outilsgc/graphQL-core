@@ -51,6 +51,10 @@ static/
 
 # Sphinx documentation
 docs/_build/
+docs/_static
+docs/_templates
+docs/conf.py
+docs/Makefile
 
 # PyBuilder
 target/

@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Meerkat Core's documentation!
+Welcome to Meerkat Core's Docs
 ========================================
 
 .. toctree::
@@ -12,6 +12,7 @@ Welcome to Meerkat Core's documentation!
 
    endpoints
    design
+   imageapi
 
 
 Indices and tables
