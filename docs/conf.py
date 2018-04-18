@@ -16,7 +16,6 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'Meerkat Core'
@@ -42,11 +41,10 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
-    'autoapi.extension',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -157,10 +155,5 @@ texinfo_documents = [
      author, 'MeerkatCore', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-# Document Python Code
-autoapi_type = 'python'
-autoapi_dirs = ['../Auth', '../profile']
-
 
 # -- Extension configuration -------------------------------------------------
