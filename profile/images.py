@@ -25,7 +25,7 @@ class AvatarImage:
             post = True
 
         if post:
-            files = {'postimage': open(tmp_name + '.jpg', 'rb')}
+            files = {'postimage': open(tmp_name, 'rb')}
 
             response = requests.post('http://image/backend.php', files=files)
 

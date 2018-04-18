@@ -13,7 +13,7 @@ class Profile(models.Model):
     title_en = models.CharField(null=True, blank=True, max_length=150)
     title_fr = models.CharField(null=True, blank=True, max_length=150)
     supervisor = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name="Employees")
-    org = models.ForeignKey('OrgTier', null=True, blank=True, on_delete=models.SET_NULL)
+    org = models.ForeignKey('OrgTier', null=True, blank=True, on_delete=models.SET_NULL, related_name="Org_Members")
 
     def __str__(self):
         return self.name
@@ -26,7 +26,7 @@ class Address(models.Model):
     # state = models.CharField(null=False, blank=False, max_length=100)
     postal_code = models.CharField(null=False, blank=False, max_length=10)
     # zip_code = models.CharField(null=False, blank=False, max_length=10)
-    country = models.CharField(null=False, blank=False, max_length=100, default='Canada')
+    country = models.CharField(null=False, blank=False, max_length=100)
 
     def __str__(self):
         return u'%s %s' % (self.street_address, self.city)
@@ -36,7 +36,7 @@ class OrgTier(models.Model):
     name_en = models.CharField(null=False, blank=False, max_length=150)
     name_fr = models.CharField(null=False, blank=False, max_length=150)
     organization = models.ForeignKey('Organization', null=False, blank=False, on_delete=models.CASCADE, related_name="Org_Tiers")
-    ownerID = models.ForeignKey('Profile', null=True, blank=False, on_delete=models.SET_NULL, related_name="Owner_of_Org_Tiers")
+    ownerID = models.ForeignKey('Profile', null=True, blank=False, on_delete=models.SET_NULL, related_name="Owner_of_Org_Tier")
 
     def __str__(self):
         return u'%s / %s' % (self.name_en, self.name_fr)

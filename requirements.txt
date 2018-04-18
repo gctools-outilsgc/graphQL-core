@@ -7,5 +7,5 @@ pillow
 requests
 djangorestframework
 psycopg2
-gunicorn
+uwsgi
 django-cors-headers

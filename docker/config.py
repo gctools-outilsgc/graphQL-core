@@ -15,8 +15,6 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = '/app/static'
-
 LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'America/Toronto'
