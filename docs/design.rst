@@ -35,9 +35,14 @@ GraphQL is an application layer query language.  What this means is that GraphQL
 * neo4j
 * GRAPHCOOL
 
+**********************
+Solution Architecture
+**********************
+.. image:: /images/Solution-architecture
+
 
 *******************
 System Design
 *******************
 
-.. image:: /images/System-design.png
+.. image:: /images/System-design

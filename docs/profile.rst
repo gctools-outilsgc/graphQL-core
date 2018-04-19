@@ -2,6 +2,14 @@
 Profile as a Service
 #######################
 
+***************************
+Application architecture
+***************************
+
+.. image:: /images/PaS-architecture
+
+
+
 *******************
 Object Data Models
 *******************
