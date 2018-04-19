@@ -12,13 +12,3 @@ Welcome to Meerkat Core's Docs
 
    design
    profile
-
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
