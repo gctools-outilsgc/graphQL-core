@@ -10,9 +10,10 @@ Welcome to Meerkat Core's Docs
    :maxdepth: 2
    :caption: Contents:
 
-   endpoints
    design
-   imageapi
+   profile
+
+
 
 
 Indices and tables
