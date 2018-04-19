@@ -174,7 +174,7 @@ Base query for all available information of a user without search criteria
 
 Query search criteria
 ^^^^^^^^^^^^^^^^^^^^^^
-Search criteria fields can be used separately or together to generate limitless filtering possibilities.
+Search criteria fields can be used separately or chained together to .
 
 **Profile**
 
