@@ -6,7 +6,7 @@ Profile as a Service
 Application architecture
 ***************************
 
-.. image:: /images/PaS-architecture
+.. image:: /images/PaS-architecture.png
 
 
 

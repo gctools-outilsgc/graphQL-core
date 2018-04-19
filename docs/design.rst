@@ -38,11 +38,11 @@ GraphQL is an application layer query language.  What this means is that GraphQL
 **********************
 Solution Architecture
 **********************
-.. image:: /images/Solution-architecture
+.. image:: /images/Solution-architecture.png
 
 
 *******************
 System Design
 *******************
 
-.. image:: /images/System-design
+.. image:: /images/System-design.png
