@@ -499,9 +499,9 @@ class ProfileQuery(graphene.ObjectType):
             if 'email' in kwargs:
                 filter.add(Q(email__iexact=kwargs.get('email')), Q.AND)
             if 'mobile_phone' in kwargs:
-                filter.add(Q(mobile_phone__iexact=kwargs.get('mobile_phone')), Q.AND)
+                filter.add(Q(mobile_phone__icontains=kwargs.get('mobile_phone')), Q.AND)
             if 'office_phone' in kwargs:
-                filter.add(Q(office_phone__iexact=kwargs.get('office_phone')), Q.AND)
+                filter.add(Q(office_phone__icontains=kwargs.get('office_phone')), Q.AND)
             if 'title_en' in kwargs:
                 filter.add(Q(title_en__icontains=kwargs.get('title_en')), Q.AND)
             if 'title_fr' in kwargs:
@@ -522,6 +522,8 @@ class ProfileQuery(graphene.ObjectType):
     def resolve_addresses(self, info, **kwargs):
         if kwargs is not None:
             filter = Q()
+            if 'id' in kwargs:
+                return Address.objects.filter(id=kwargs.get('id'))
             if 'street_address' in kwargs:
                 filter.add(Q(street_address__icontains=kwargs.get('street_address')), Q.AND)
             if 'city' in kwargs:
@@ -548,6 +550,8 @@ class ProfileQuery(graphene.ObjectType):
     def resolve_orgtiers(self, info, **kwargs):
         if kwargs is not None:
             filter = Q()
+            if 'id' in kwargs:
+                return OrgTier.objects.filter(id=kwargs.get('id'))
             if 'name_en' in kwargs:
                 filter.add(Q(name_en__icontains=kwargs.get('name_en')), Q.AND)
             if 'name_fr' in kwargs:
@@ -568,6 +572,8 @@ class ProfileQuery(graphene.ObjectType):
     def resolve_organizations(self, info, **kwargs):
         if kwargs is not None:
             filter = Q()
+            if 'id' in kwargs:
+                return Organization.objects.filter(id=kwargs.get('id'))
             if 'name_en' in kwargs:
                 filter.add(Q(name_en__icontains=kwargs.get('name_en')), Q.AND)
             if 'name_fr' in kwargs:
