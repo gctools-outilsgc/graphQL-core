@@ -3,7 +3,7 @@ Profile as a Service
 #######################
 
 ***************************
-Application architecture
+Application / Service Architecture
 ***************************
 
 .. image:: /images/PaS-architecture.png
@@ -62,7 +62,7 @@ Organization
 Core Endpoints
 ***************
 
-
+All available endpoints use GraphQL query language.
 
 /graphiql
 ===========
@@ -75,8 +75,8 @@ This endpoint is used to access the graphiql interface which permits querying in
 =============
 This endpoint is used by client applications that do not require a graphical interface.  This endpoint is a pure API.
 
-Available Queries
---------------------
+Queries
+--------
 Queries do not require authentication of the client through the means of an access token.
 
 Base query for all available information of a user without search criteria
@@ -182,9 +182,21 @@ Base query for all available information of a user without search criteria
 
 Query search criteria
 ^^^^^^^^^^^^^^^^^^^^^^
-Search criteria fields can be used separately or chained together to .
+Search criteria fields can be used separately or chained together to easily filter through data.
 
 **Profile**
+
+Available Arguments:
+
+* ``gcId`` *exact match* (string)
+* ``name`` *name contains* (string)
+* ``email`` *exact match* (string)
+* ``mobilePhone`` *mobile number contains* (string)
+* ``officePhone`` *office number contains* (string)
+* ``titleEn`` *title contains* (string)
+* ``titleFr`` *title contains* (string)
+
+Example with all available arguments:
 
 ::
 
@@ -202,24 +214,45 @@ Search criteria fields can be used separately or chained together to .
 
 **Addresses**
 
+Available arguments:
+
+* ``id`` *exact match* (int)
+* ``streetAddress`` *street address contains* (string)
+* ``city`` *city contains* (string)
+* ``province`` *exact match* (string)
+* ``postalCode`` *exact match* (string)
+* ``country`` *exact match* (string)
+
+Example with all available arguments
+
 ::
 
     query{
         addresses(
-        streetAddress:"string",
-        city:"string",
-        province:"string",
-        postalCode:"string",
-        country:"string"
+            id:2,
+            streetAddress:"string",
+            city:"string",
+            province:"string",
+            postalCode:"string",
+            country:"string"
         )
     }
 
 **Organizational Tiers**
 
+Available arguments:
+
+* ``id`` *exact match* (int)
+* ``nameEn`` *english name contains* (string)
+* ``nameFr`` *french name contains* (string)
+
+Example with all available arguments:
+
 ::
 
     query{
         orgtiers(
+            id:2,
             nameEn:"string",
             nameFr:"string",
         )
@@ -227,10 +260,20 @@ Search criteria fields can be used separately or chained together to .
 
 **Organizations**
 
+Available arguments:
+
+* ``id`` *exact match* (int)
+* ``nameEn`` *name of organization contains* (string)
+* ``nameFr`` *name of organization contains* (string)
+* ``acronymEn`` *exact match* (string)
+* ``acronymFr`` *exact match* (string)
+
+
 ::
 
     query{
         organizations(
+            id:1,
             nameEn:"string",
             nameFr:"string",
             acronymEn:"string",
@@ -247,7 +290,8 @@ The simple way defined in the GraphQL pagination documentation is to slice the r
 
 These two pagination parameters have been implemented on all of the search query functions.
 
-The example query below will search for all profiles that contain the name "Bryan" but instead of returning the complete array the query below is requesting items 2 and 3 in the array.  Skip the first item in the array and send the next 2 in the array.
+The example query below will search for all profiles that contain the name "Bryan" but instead of returning the complete array the query b
+elow is requesting items 2 and 3 in the array.  Skip the first item in the array and send the next 2 in the array.
 
 ::
 
@@ -260,6 +304,142 @@ The example query below will search for all profiles that contain the name "Brya
     }
 
 
+Mutations
+----------
+Mutations do require authentication in the form of the users valid OpenID Connect access token.  The access token must be passed in the request header in the form ``Authorization: Bearer {access token}``.
+
+
+Profile Mutations
+^^^^^^^^^^^^^^^^^^
+
+Available arguments to send in a mutation:
+
+* ``gcId`` *a users identifier* (string)
+* ``profileInfo`` *an array object with values to modify* (dict)
+
+    * ``name`` *user's name* (string)
+    * ``email`` *user's email* (string)
+    * ``titleEn`` *user's english position title* (string)
+    * ``titleFr`` *user's french position title* (string)
+    * ``mobilePhone`` *mobile phone number* (string)
+    * ``officePhone`` *office phone number* (string)
+    * ``address`` *user's work address* (address object)
+
+        * ``streetAddress`` (string)
+        * ``city`` (string)
+        * ``province`` (string)
+        * ``postalCode`` (string)
+        * ``country`` (string)
+
+    * ``supervisor`` *user object of identified supervisor* (user object)
+
+        * ``gcID`` *a users identifier* (string)
+
+    * ``org`` *organizational tier group object*
+
+        * ``orgID`` *an organizatinal tier's unique id* (int)
+
+
+Example mutation using all available arguments:
+
+::
+
+    mutation{
+        modifyProfile(
+            gcId:2,
+            profileInfo:{
+            name:"string",
+            email:"string",
+            titleEn:"string",
+            titleFr:"string",
+            mobilePhone:"string",
+            officePhone:"string",
+            address:{
+                streetAddress:"string",
+                city:"string",
+                province:"string",
+                postalCode:"string",
+                country:"string",
+            }
+            supervisor:{
+                gcId:3
+            }
+            org:{
+                orgId:1
+            }
+        }
+        )
+    }
+
+Organization Tier Mutations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Create an OrgTier**
+
+Available arguments to send in a mutation:
+
+* ``nameEn`` *english name of org tier* (string)
+* ``nameFr`` *french name of org tier* (string)
+* ``organizationId`` *organization unique id* (int)
+* ``ownerGcId`` *unique user who owns the organization* (int)
+
+Example mutation to create an OrgTier:
+
+::
+
+    mutation{
+        createOrgTier(
+            nameEn:"string",
+            nameFr:"string",
+            organizationId:3
+            ownerGcId:2
+         )
+    }
+
+**Modify an OrgTier**
+
+Available arguments to send in a mutation:
+
+* ``orgId`` *unique identifier of the org tier to modify* (int)
+* ``dataToModify`` *array of information to modify* (dict)
+
+    * ``nameEn`` *english name of org tier* (string)
+    * ``nameFr`` *french name of org tier* (string)
+    * ``organizationId`` *organization unique id* (int)
+    * ``ownerGcId`` *unique user who owns the organization* (int)
+
+Example mutation to modify an OrgTier:
+
+::
+
+    mutation{
+        modifyOrgTier(
+            orgId:2,
+            dataToModify:{
+            nameEn:"string",
+            nameFr:"string",
+            organizationId:4,
+            ownerGcId:23
+            }
+        )
+    }
+
+**Delete an OrgTier**
+
+Available arguments to send in a mutation:
+
+* ``orgTierId`` *unique identifier of the org tier* (int)
+
+Example mutation to delete an OrgTier:
+
+::
+
+    mutation{
+        deleteOrgTier(
+            orgTierId:6
+            )
+    }
+
 
 /protected
 ============
@@ -269,8 +449,7 @@ This endpoint is similar to the ``graphqlcore`` endpoint however is used for dat
 Image Resource Server API
 **************************
 
-The Profile as a Service leverages `PictShare <https://github.com/chrisiaut/pictshare>`_ which is aa multi lingual, open source image hosting application with a simple resizing and upload API.  PictShare is licensed under the `Apache-2.0 License <https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](https://github.com/chrisiaut/pictshare/blob/master/LICENSE>`_
-
+The Profile as a Service leverages `PictShare <https://github.com/chrisiaut/pictshare>`_ which is a multi lingual, open source image hosting application with a simple resizing and upload API for the hosting of profile avatar images.  PictShare is licensed under the `Apache-2.0 License <https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](https://github.com/chrisiaut/pictshare/blob/master/LICENSE>`_
 
 
 
