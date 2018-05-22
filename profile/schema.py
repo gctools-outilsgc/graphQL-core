@@ -605,10 +605,14 @@ class ProfileMutation(graphene.ObjectType):
 
 class ProtectedProfileMutation(graphene.ObjectType):
     delete_profile = DeleteProfile.Field()
+    modify_profile = ModifyProfile.Field()
     create_profile = CreateProfile.Field()
     create_organization = CreateOrganization.Field()
     delete_organization = DeleteOrganization.Field()
     modify_organization = ModifyOrganization.Field()
+    create_org_tier = CreateOrgTier.Field()
+    modify_org_tier = ModifyOrgTier.Field()
+    delete_org_tier = DeleteOrgTier.Field()
 
 
 class ProtectedMutation(ProtectedProfileMutation, graphene.ObjectType):
