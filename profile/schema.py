@@ -130,7 +130,7 @@ class ModifyProfileSupervisorInput(graphene.InputObjectType):
 
 
 class ModifyProfileOrgTierInput(graphene.InputObjectType):
-    org_id = graphene.Int(required=False, default_value=None)
+    orgTier_id = graphene.Int(required=False, default_value=None)
 
 
 class ModifyProfileInput(graphene.InputObjectType):
@@ -272,7 +272,7 @@ class DeleteProfile(graphene.Mutation):
 
 
 class CreateOrganization(graphene.Mutation):
-    id = graphene.Int()
+    organizationId = graphene.Int()
     name_en = graphene.String()
     name_fr = graphene.String()
     acronym_fr = graphene.String()
@@ -304,7 +304,7 @@ class CreateOrganization(graphene.Mutation):
         )
         organization.save()
         return CreateOrganization(
-            id=organization.id,
+            organizationId=organization.id,
             name_en=organization.name_en,
             name_fr=organization.name_fr,
             acronym_fr=organization.acronym_fr,
@@ -320,7 +320,7 @@ class ModifyOrganizationInput(graphene.InputObjectType):
 
 
 class ModifyOrganization(graphene.Mutation):
-    id = graphene.Int()
+    organizationId = graphene.Int()
     name_en = graphene.String()
     name_fr = graphene.String()
     acronym_fr = graphene.String()
@@ -346,7 +346,13 @@ class ModifyOrganization(graphene.Mutation):
 
         organization.save()
 
-        return organization
+        return ModifyOrganization(
+            organizationId=organization.id,
+            name_en=organization.name_en,
+            name_fr=organization.name_fr,
+            acronym_fr=organization.acronym_fr,
+            acronym_en=organization.acronym_en,
+        )
 
 
 class DeleteOrganization(graphene.Mutation):
@@ -365,7 +371,7 @@ class DeleteOrganization(graphene.Mutation):
 
 
 class CreateOrgTier(graphene.Mutation):
-    id = graphene.Int()
+    orgtierId = graphene.Int()
     name_en = graphene.String()
     name_fr = graphene.String()
     organization = graphene.Field(OrganizationType)
@@ -409,11 +415,11 @@ class CreateOrgTier(graphene.Mutation):
 
         orgtier.save()
         return CreateOrgTier(
-            orgId=orgtier.id,
+            orgtierId=orgtier.id,
             name_en=orgtier.name_en,
             name_fr=orgtier.name_fr,
             organization=orgtier.organization,
-            ownerID=orgtier.organization
+            ownerID=orgtier.ownerID
         )
 
 
@@ -425,7 +431,7 @@ class ModifyOrgTierInput(graphene.InputObjectType):
 
 
 class ModifyOrgTier(graphene.Mutation):
-    id = graphene.Int()
+    orgTierid = graphene.Int()
     name_en = graphene.String()
     name_fr = graphene.String()
     organization = graphene.Field(OrganizationType)
@@ -460,7 +466,13 @@ class ModifyOrgTier(graphene.Mutation):
                 org.ownerID = profile
         org.save()
 
-        return org
+        return ModifyOrgTier(
+            orgtierid=org.id,
+            name_en=org.name_en,
+            name_fr=org.name_fr,
+            organization=org.organization,
+            ownerID=org.ownerID
+        )
 
 
 class DeleteOrgTier(graphene.Mutation):
