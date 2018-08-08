@@ -1,7 +1,6 @@
 import requests
 from django.conf import settings
 from profile.models import Profile
-from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
@@ -40,6 +39,17 @@ def check_token(self, info, scopes=None, **kwargs):
             authorized = authorized & True
         else:
             authorized = authorized & False
+            raise Exception('Token owner does not match profile owner')
+
+    if 'employee_id' and 'gcID' in kwargs:
+        employee_id = kwargs.get('employee_id')
+        supervisor_id = kwargs.get('gcID')
+        employee = Profile.objects.get(gcID=employee_id)
+        if employee.supervisor.gcID == supervisor_id:
+            authorized = authorized & True
+        else:
+            authorized = authorized & False
+            raise Exception('Token owner is not a supervisor of the requested profile')
 
     return authorized
 
