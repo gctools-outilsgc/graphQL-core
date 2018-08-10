@@ -41,7 +41,7 @@ def check_token(self, info, scopes=None, **kwargs):
             authorized = authorized & False
             raise Exception('Token owner does not match profile owner')
 
-    if 'employee_id' and 'gcID' in kwargs:
+    if 'employee_id' in kwargs and 'gcID' in kwargs:
         employee_id = kwargs.get('employee_id')
         supervisor_id = kwargs.get('gcID')
         employee = Profile.objects.get(gcID=employee_id)
