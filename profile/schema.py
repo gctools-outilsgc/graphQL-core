@@ -300,7 +300,7 @@ class ModifyEmployeeProfile(graphene.Mutation):
     class Arguments:
         employee_gc_id = graphene.String(required=True, description='An employees unique identifier as provided by the "sub"'
                                                            ' field from oidc provider in identity token')
-                profile_info = ModifyEmployeeProfileInput(required=True, description='A dict of values to modify. To upload an avatar'
+        profile_info = ModifyEmployeeProfileInput(required=True, description='A dict of values to modify. To upload an avatar'
                                                                        ' include the file in the POST request with the'
                                                                        ' name "avatar". The avatar field will not be'
                                                                        ' used and is for information only')
