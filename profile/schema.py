@@ -572,7 +572,7 @@ class ModifyOrgTier(graphene.Mutation):
         org.save()
 
         return ModifyOrgTier(
-            orgtierid=org.id,
+            orgTierid=org.id,
             name_en=org.name_en,
             name_fr=org.name_fr,
             organization=org.organization,
