@@ -229,7 +229,7 @@ class ModifyProfile(graphene.Mutation):
                 profile.supervisor = None
 
         if profile_info.org is not None:
-            orgId = profile_info.org.get('org_id')
+            orgId = profile_info.org.get('orgTier_id')
             if orgId is not None:
                 org = OrgTier.objects.get(id=orgId)
                 if org is not None:
@@ -362,7 +362,7 @@ class ModifyEmployeeProfile(graphene.Mutation):
                 profile.supervisor = None
 
         if profile_info.org is not None:
-            orgId = profile_info.org.get('org_id')
+            orgId = profile_info.org.get('orgTier_id')
             if orgId is not None:
                 org = OrgTier.objects.get(id=orgId)
                 if org is not None:
