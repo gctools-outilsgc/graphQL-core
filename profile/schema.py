@@ -308,7 +308,7 @@ class ModifyEmployeeProfile(graphene.Mutation):
                                                                        ' used and is for information only')
 
     @staticmethod
-    def mutate(self, info, employee_gc_id, supervisor_employee_id, profile_info):
+    def mutate(self, info, employee_gc_id, profile_info):
 
         scopes = {'modify_profile'}
         kwargs = {'gcID': gc_id, 'employee_id': employee_gc_id}
