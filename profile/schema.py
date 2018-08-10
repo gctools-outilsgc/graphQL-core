@@ -298,6 +298,7 @@ class ModifyEmployeeProfile(graphene.Mutation):
     org = graphene.Field(OrgTierType)
 
     class Arguments:
+        gc_id = graphene.String(required=True, description='A profiles unique identifier who in this case is the supervisor of the employee profile requesting to be changed')
         employee_gc_id = graphene.String(required=True, description='An employees unique identifier as provided by the "sub"'
                                                            ' field from oidc provider in identity token')
         profile_info = ModifyEmployeeProfileInput(required=True, description='A dict of values to modify. To upload an avatar'
@@ -306,7 +307,7 @@ class ModifyEmployeeProfile(graphene.Mutation):
                                                                        ' used and is for information only')
 
     @staticmethod
-    def mutate(self, info, employee_gc_id, profile_info):
+    def mutate(self, info, gc_id, employee_gc_id, profile_info):
 
         scopes = {'modify_profile'}
         kwargs = {'gcID': gc_id, 'employee_id': employee_gc_id}
