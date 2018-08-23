@@ -568,6 +568,12 @@ class ModifyOrgTier(graphene.Mutation):
                 raise Exception('Could not find Org Owner ID')
             else:
                 org.ownerID = profile
+                
+            members = Profile.objects.get(org=org.id)
+            for member in members:
+                member.supervisor = profile
+                member.save()
+
         org.save()
 
         return ModifyOrgTier(
